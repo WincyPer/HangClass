@@ -5,52 +5,67 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.SPI;
+import com.kauailabs.navx.frc.AHRS;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
+
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  //HANG MOTORS AND SENSORS
+  private WPI_TalonSRX hangPivotMotor;
+  private WPI_TalonFX hangElevatorMotor;
+  private TalonEncoder pivotEncoder;
+  private TalonFXSensorCollection elevatorEncoder;
+  
+  private DigitalInput hangTopLimit;
+  private DigitalInput hangBotLimit;
+  private DigitalInput hangFrontLimit;
+  private DigitalInput hangBackLimit;
+  private AHRS navX;
+
+  private Joystick joystick;
+  private Hang hangClass;
+
+  
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+                                            //PORT NUMBERS ARE NOT FINAL FOR THE NEW ROBOT
+    hangPivotMotor = new WPI_TalonSRX(0);
+    hangElevatorMotor = new WPI_TalonFX(0);
+    pivotEncoder = new TalonEncoder(hangPivotMotor);
+    elevatorEncoder = new TalonFXSensorCollection(hangElevatorMotor);
+
+    hangTopLimit = new DigitalInput(0);
+    hangBotLimit = new DigitalInput(1);
+    hangFrontLimit = new DigitalInput(2);
+    hangBackLimit = new DigitalInput(3);
+    navX = new AHRS(SPI.Port.kMXP);
+
+    hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
+
+
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use this for items like
-   * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
+ 
   @Override
   public void robotPeriodic() {}
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
-   * chooser code above as well.
-   */
+
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
@@ -58,17 +73,16 @@ public class Robot extends TimedRobot {
     System.out.println("Auto selected: " + m_autoSelected);
   }
 
-  /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
       case kCustomAuto:
-        // Put custom auto code here
-        break;
+      break;
+
       case kDefaultAuto:
       default:
-        // Put default auto code here
-        break;
+      break;
+
     }
   }
 
@@ -79,7 +93,40 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-  
+    
+    if(joystick.getRawButton(7)){
+      hangClass.setElevatorRetract();
+    }
+
+    else if(joystick.getRawButton(8)){
+      hangClass.setElevatorExtend();
+    }
+
+    else if (joystick.getRawButton(3)) {
+      hangClass.setElevatorTesting();
+      hangClass.manualElevator(joystick.getY());
+    }
+
+    else{
+      hangClass.setElevatorStop();
+    }
+
+    if (joystick.getRawButton(9)) {
+      hangClass.setPivotInward();
+    }
+
+    else if (joystick.getRawButton(10)){
+      hangClass.setPivotOutward();
+    }
+
+    else if (joystick.getRawButton(4)) {
+      hangClass.setPivotTesting();
+      hangClass.manualPivot(joystick.getY());
+    }
+
+    else{
+      hangClass.setPivotStop();
+    }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -88,7 +135,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    hangClass.setPivotStop();
+    hangClass.setElevatorStop();
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
