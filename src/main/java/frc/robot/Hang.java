@@ -206,7 +206,7 @@ public class Hang {
 
     //ELEVATOR METHODS
     private void elevatorExtend(){
-        if(topLimit.get()){                                                            //if not at top limit
+        if(topLimitTouched()){                                                            //if not at top limit
             if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){              //and not close to limit
                 elevatorMotor.set(0.40);                                                          //extend fast
             }
@@ -220,7 +220,7 @@ public class Hang {
     }
 
     private void elevatorRetract(){
-        if(botLimit.get()){
+        if(bottomLimitTouched()){
             if(elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit){
                 elevatorMotor.set(-0.40);
             }
