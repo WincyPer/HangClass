@@ -22,6 +22,10 @@ public class Hang {
 
     private double closeTopLimit = 0.50* 2094;                
     private double closeBotLimit = 600; 
+    private double extendSpeed = 0.40;
+    private double slowExtendSpeed = 0.30;
+    private double retractSpeed = -0.40;
+    private double slowRetractSpeed = -0.30;
     
     //PIVOT MOTOR
     private MotorController pivotMotor;
@@ -81,7 +85,6 @@ public class Hang {
     public void setPivotStop(){
         pivotMode = pivotStates.STOP; 
     }
-
 
     //ELEVATOR ENUMERATIONS
     private enum elevatorStates{
@@ -203,15 +206,14 @@ public class Hang {
     private void pivotTesting(){ 
     }
 
-
     //ELEVATOR METHODS
     private void elevatorExtend(){
         if(topLimitTouched()){                                                            //if not at top limit
             if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){              //and not close to limit
-                elevatorMotor.set(0.40);                                                          //extend fast
+                elevatorMotor.set(extendSpeed);                                                          //extend fast
             }
             else{                                                                           //if close to limit
-                elevatorMotor.set(0.30);                                                          //extend slow
+                elevatorMotor.set(slowExtendSpeed);                                                          //extend slow
             }
         }
         else{                                                                           //until at top limit
@@ -222,10 +224,10 @@ public class Hang {
     private void elevatorRetract(){
         if(bottomLimitTouched()){
             if(elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit){
-                elevatorMotor.set(-0.40);
+                elevatorMotor.set(retractSpeed);
             }
             else{
-                elevatorMotor.set(-0.30);
+                elevatorMotor.set(slowRetractSpeed);
             }
         }
         else{
