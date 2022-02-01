@@ -138,6 +138,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     hangClass.setPivotStop();
     hangClass.setElevatorStop();
+    hangClass.resetCounters();
   }
 
   /** This function is called once when test mode is enabled. */

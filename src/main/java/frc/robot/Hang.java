@@ -39,6 +39,8 @@ public class Hang {
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
 
+    private int setUpMidCount = 0;
+    private int setUpHighCount = 0; 
     /////////////////////////////////////////////
     //                                         //
     //              CONSTRUCTOR                //
@@ -250,6 +252,84 @@ public class Hang {
 
     }
 
+    public void resetCounters(){
+        setUpMidCount = 0;
+        setUpHighCount = 0; 
+    }
+
+    private void setUpMidHang(){  // extend elevator lift and pivot outwards 
+        switch(setUpMidCount) {
+            case 0: 
+            if(topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
+                if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
+                    elevatorMotor.set(extendSpeed);                                                          
+                }
+                else{       //EXTEND AT SLOW SPEED IF CLOSE TO TOP LIMIT                                                                            
+                    elevatorMotor.set(slowExtendSpeed);                                                          
+                }
+            }
+            else{       //STOP WHEN TOP LIMIT IS TOUCHED                                             
+                elevatorMotor.set(0);  
+                setUpMidCount++;                                                         
+            }
+            break; 
+
+            case 1: 
+            if(backLimitTouched()){     //IF BACK LIMIT IS NOT TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
+            
+                if(pivotEncoder.get() > outwardPivotPos){       //IF PIVOT ENCODER IS MORE THAN NEEDED COUNT, GO. OTHERWISE, STOP.
+                    pivotMotor.set(outwardPivotSpeed);
+                }
+    
+                else{        
+                    pivotMotor.set(0);      
+                }
+            }
+    
+            else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
+                pivotMotor.set(0);
+            }
+            break; 
+        }
+    }
+
+    public void setUpHighHang() {
+        switch(setUpHighCount) {
+            case 0: 
+            if(frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
+                if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
+                    pivotMotor.set(inwardPivotSpeed);
+                }
+    
+                else{   
+                    pivotMotor.set(0);
+                }
+            }
+    
+            else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
+                pivotMotor.set(0);
+                setUpHighCount++; 
+            }
+            break; 
+
+            case 1: 
+            if(frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
+                if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
+                    pivotMotor.set(inwardPivotSpeed);
+                }
+    
+                else{   
+                    pivotMotor.set(0);
+                }
+            }
+    
+            else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
+                pivotMotor.set(0);
+            }
+            break; 
+        }
+    }
+
     /////////////////////////////////////////////
     //                                         //
     //                   RUN                   //
@@ -271,6 +351,9 @@ public class Hang {
         SmartDashboard.putString("ELEVATOR STATE", elevatorMode.toString());
         SmartDashboard.putBoolean("BOTTOM LIMIT", !botLimit.get());
         SmartDashboard.putBoolean("TOP LIMIT", !topLimit.get());
+
+        SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
+        SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount); 
         
         switch(pivotMode){
             case PIVINWARD:
