@@ -41,6 +41,7 @@ public class Hang {
 
     private int setUpMidCount = 0;
     private int setUpHighCount = 0; 
+
     /////////////////////////////////////////////
     //                                         //
     //              CONSTRUCTOR                //
@@ -257,6 +258,8 @@ public class Hang {
         setUpHighCount = 0; 
     }
 
+    /*
+    // EXPERIMENTAL CODE // - MEANT TO SET UP POSITION FOR HANGING
     private void setUpMidHang(){  // extend elevator lift and pivot outwards 
         switch(setUpMidCount) {
             case 0: 
@@ -329,6 +332,7 @@ public class Hang {
             break; 
         }
     }
+    */
 
     /////////////////////////////////////////////
     //                                         //
