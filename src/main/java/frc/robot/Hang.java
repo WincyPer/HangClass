@@ -34,11 +34,12 @@ public class Hang {
     private DigitalInput backLimit;
     private AHRS navX;
 
-    private final double inwardPivotPos = -1100.0;
-    private final double outwardPivotPos = -1500.0;
+    private final double inwardPivotPos = -600.0; //INWARD POSITION FOR THE ANGLES OF HIGH HANG & UP
+    private final double outwardPivotPos = -1500.0; //OUTWARD POSITION FOR GETTING ONTO RUNG
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
 
+    //COUNTERS AND OTHER VARIABLES
     private int setUpMidCount = 0;
     private int setUpHighCount = 0; 
 
@@ -258,9 +259,8 @@ public class Hang {
         setUpHighCount = 0; 
     }
 
-    /*
-    // EXPERIMENTAL CODE // - MEANT TO SET UP POSITION FOR HANGING
-    private void setUpMidHang(){  // extend elevator lift and pivot outwards 
+    //HANG SEQUENCES
+    private void setUpMidHang(){   
         switch(setUpMidCount) {
             case 0: 
             if(topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
@@ -315,24 +315,29 @@ public class Hang {
             }
             break; 
 
-            case 1: 
-            if(frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
-                if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
-                    pivotMotor.set(inwardPivotSpeed);
+            case 1:
+            if(topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
+                if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
+                    elevatorMotor.set(extendSpeed);                                                          
                 }
-    
-                else{   
-                    pivotMotor.set(0);
+                else{       //EXTEND AT SLOW SPEED IF CLOSE TO TOP LIMIT                                                                            
+                    elevatorMotor.set(slowExtendSpeed);                                                          
                 }
             }
-    
-            else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
-                pivotMotor.set(0);
+            else{       //STOP WHEN TOP LIMIT IS TOUCHED                                             
+                elevatorMotor.set(0);  
+                setUpMidCount++;                                                         
             }
             break; 
+
+            case 2:
+            if(backLimitTouched()){
+                if()
+            }
+
         }
     }
-    */
+    
 
     /////////////////////////////////////////////
     //                                         //
