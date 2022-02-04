@@ -26,6 +26,8 @@ public class Hang {
     private double slowExtendSpeed = 0.30;
     private double retractSpeed = -0.40;
     private double slowRetractSpeed = -0.30;
+
+    private final double highHangElevator = 800.0; 
     
     //PIVOT MOTOR
     private MotorController pivotMotor;
@@ -38,6 +40,7 @@ public class Hang {
     private final double outwardPivotPos = -1500.0; //OUTWARD POSITION FOR GETTING ONTO RUNG
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
+    private final double highHangPivot = -700.0; 
 
     //COUNTERS AND OTHER VARIABLES
     private int setUpMidCount = 0;
@@ -148,7 +151,7 @@ public class Hang {
 
     //  PIVOT METHODS  //
     private void pivotOutward(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(backLimitTouched()){     //IF BACK LIMIT IS NOT TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
+        if(!backLimitTouched()){     //IF BACK LIMIT IS NOT TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
             
             if(pivotEncoder.get() > outwardPivotPos){       //IF PIVOT ENCODER IS MORE THAN NEEDED COUNT, GO. OTHERWISE, STOP.
                 pivotMotor.set(outwardPivotSpeed);
@@ -165,7 +168,7 @@ public class Hang {
     }
 
     private void pivotInward(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
+        if(!frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
             if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
                 pivotMotor.set(inwardPivotSpeed);
             }
@@ -181,7 +184,7 @@ public class Hang {
     }
 
     private void manualPivotOutward(){      //PIVOTS OUTWARD, UNLESS BACK LIMIT IS TOUCHED
-        if(backLimitTouched()){        
+        if(!backLimitTouched()){        
             pivotMotor.set(outwardPivotSpeed);
         }
 
@@ -191,7 +194,7 @@ public class Hang {
     }
 
     private void manualPivotInward(){       //PIVOTS INWARD, UNLESS FRONT LIMIT IS TOUCHED
-        if(frontLimitTouched()){       
+        if(!frontLimitTouched()){       
             pivotMotor.set(inwardPivotSpeed);       
         }
 
@@ -213,7 +216,7 @@ public class Hang {
 
     //  ELEVATOR METHODS  //
     private void elevatorExtend(){
-        if(topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
+        if(!topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
             if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
                 elevatorMotor.set(extendSpeed);                                                          
             }
@@ -227,7 +230,7 @@ public class Hang {
     }
 
     private void elevatorRetract(){
-        if(bottomLimitTouched()){       //IF NOT AT BOTTOM LIMIT
+        if(!bottomLimitTouched()){       //IF NOT AT BOTTOM LIMIT
             if(elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
                 elevatorMotor.set(retractSpeed);
             }
@@ -263,6 +266,7 @@ public class Hang {
     private void setUpMidHang(){   
         switch(setUpMidCount) {
             case 0: 
+            // elevator extend 
             if(topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
                 if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
                     elevatorMotor.set(extendSpeed);                                                          
@@ -278,6 +282,7 @@ public class Hang {
             break; 
 
             case 1: 
+            //pivot outward
             if(backLimitTouched()){     //IF BACK LIMIT IS NOT TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
             
                 if(pivotEncoder.get() > outwardPivotPos){       //IF PIVOT ENCODER IS MORE THAN NEEDED COUNT, GO. OTHERWISE, STOP.
@@ -299,23 +304,7 @@ public class Hang {
     public void setUpHighHang() {
         switch(setUpHighCount) {
             case 0: 
-            if(frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
-                if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
-                    pivotMotor.set(inwardPivotSpeed);
-                }
-    
-                else{   
-                    pivotMotor.set(0);
-                }
-            }
-    
-            else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
-                pivotMotor.set(0);
-                setUpHighCount++; 
-            }
-            break; 
-
-            case 1:
+            // elevator extend 
             if(topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
                 if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
                     elevatorMotor.set(extendSpeed);                                                          
@@ -325,14 +314,7 @@ public class Hang {
                 }
             }
             else{       //STOP WHEN TOP LIMIT IS TOUCHED                                             
-                elevatorMotor.set(0);  
-                setUpMidCount++;                                                         
-            }
-            break; 
-
-            case 2:
-            if(backLimitTouched()){
-                if()
+                elevatorMotor.set(0);                                                          
             }
 
         }
