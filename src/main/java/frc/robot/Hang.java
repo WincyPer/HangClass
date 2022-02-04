@@ -39,6 +39,7 @@ public class Hang {
     private AHRS navX;
 
     private final double inwardPivotPos = -600.0; //INWARD POSITION FOR THE ANGLES OF HIGH HANG & UP
+    private final double midPivotPos = -800.0;
     private final double outwardPivotPos = -1500.0; //OUTWARD POSITION FOR GETTING ONTO RUNG
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
@@ -154,6 +155,10 @@ public class Hang {
 
     private boolean inwardLimitReached(){       //CHECKS IF PIVOT ENCODER REACHED INWARD
         return pivotEncoder.get() < inwardPivotPos;
+    }
+
+    private boolean midLimitReached() {
+        return pivotEncoder.get() < midPivotPos;
     }
 
     public void hangEncReset(){     //RESETTING BOTH PIVOT AND ELEVATOR ENCODERS
@@ -283,11 +288,66 @@ public class Hang {
         setUpHighCount = 0; 
     }    
 
+    private void midHangGrab() {
+        switch(setUpMidCount) {
+            case 0: 
+            //pivot outward 
+            if ((!backLimitTouched() || outwardLimitReached())) {
+                pivotOutward(); 
+            } else {
+                pivotStop();
+                setUpMidCount++; 
+            }
+            break; 
+
+            case 1: 
+            //elevator extend 
+            if (!topLimitTouched() || upwardLimitReached()) {
+                elevExtend();
+            } else {
+                if (!topLimitTouched()) {
+                    extendSlow();
+                } else {
+                    elevatorStop();
+                    setUpMidCount++; 
+                }
+            }
+            break; 
+
+            case 2: 
+            // elevator retract 
+            if (!bottomLimitTouched() || downwardLimitReached()) {
+                elevRetract();
+            } else {
+                if(!bottomLimitTouched()) {
+                    retractSlow();
+                } else {
+                    elevatorStop();
+                    setUpMidCount++; 
+                }
+            }
+            break; 
+
+            case 3: 
+            //pivot to mid
+            if (!midLimitReached() ) {
+                pivotInward();
+            } else {
+                pivotStop();
+                setUpMidCount++; 
+            }
+            break; 
+
+            case 4: 
+            //elevator extend
+        }
+    }
+
     private void highHangGrab(){
         switch(setUpHighCount){
             case 0: 
-            // extend elevator 
-            if (!topLimitTouched() && elevatorEncoder.getIntegratedSensorPosition() < highHangElevator) {
+            // extend elevator (some)
+            if (!topLimitTouched() && elevatorEncoder.getIntegratedSensorPosition() < highHangElevator) {  
                 elevExtend(); 
             } else {
                 elevatorStop(); 
@@ -339,17 +399,11 @@ public class Hang {
 
             case 4: 
             //elevator retract 
-            if (!bottomLimitTouched() || !downwardLimitReached()) {
+            if (!bottomLimitTouched() && elevatorEncoder.getIntegratedSensorPosition() < highHangElevator) {
                 elevRetract();
             } 
             else {
-                if (!bottomLimitTouched()) {
-                    retractSlow();
-                } 
-                
-                else {
-                    elevatorStop();
-                }
+                elevatorStop();
             }
             break; 
         }
