@@ -36,7 +36,10 @@ public class Robot extends TimedRobot {
   private AHRS navX;
 
   private Joystick joystick;
+  private HangElevator elevator;
+  private HangPivot pivot;
   private Hang hangClass;
+  
 
   
   @Override
@@ -60,8 +63,11 @@ public class Robot extends TimedRobot {
 
     joystick = new Joystick(0);
 
-    hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
-
+    elevator = new HangElevator(elevMotor, limitSwitchTop, limitSwitchBottom, elevEncoder)
+    pivot = new HangPivot(pivotMotor, hangPivotEncoder, gyro, frontLimitSwitch, backLimitSwitch)
+    hangClass = new Hang(pivot, elevator);
+   // hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
+    
 
   }
 
