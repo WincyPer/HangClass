@@ -22,11 +22,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  //HANG MOTORS AND SENSORS
+  //HANG MOTORS AND SENSORS     //SENSORS AND MOTORS ARE TESTED ON OLD ROBOT
   private WPI_TalonSRX hangPivotMotor;
-  private WPI_TalonFX hangElevatorMotor;
+  private WPI_TalonSRX hangElevatorMotor;
   private TalonEncoder pivotEncoder;
-  private TalonFXSensorCollection elevatorEncoder;
+  private TalonEncoder elevatorEncoder;
   
   private DigitalInput hangTopLimit;
   private DigitalInput hangBotLimit;
@@ -45,15 +45,15 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
                                             //PORT NUMBERS ARE NOT FINAL FOR THE NEW ROBOT
-    hangPivotMotor = new WPI_TalonSRX(0);
-    hangElevatorMotor = new WPI_TalonFX(0);
+    hangPivotMotor = new WPI_TalonSRX(4);
+    hangElevatorMotor = new WPI_TalonSRX(3);
     pivotEncoder = new TalonEncoder(hangPivotMotor);
-    elevatorEncoder = new TalonFXSensorCollection(hangElevatorMotor);
+    elevatorEncoder = new TalonEncoder(hangElevatorMotor);
 
-    hangTopLimit = new DigitalInput(0);
-    hangBotLimit = new DigitalInput(1);
-    hangFrontLimit = new DigitalInput(2);
-    hangBackLimit = new DigitalInput(3);
+    hangTopLimit = new DigitalInput(3);
+    hangBotLimit = new DigitalInput(4);
+    hangFrontLimit = new DigitalInput(0);
+    hangBackLimit = new DigitalInput(2);
     navX = new AHRS(SPI.Port.kMXP);
 
     hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
