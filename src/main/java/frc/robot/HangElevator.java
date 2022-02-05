@@ -60,11 +60,11 @@ public class HangElevator{
     }
 
     //CHECKS
-    private boolean topLimitTouched(){      
+    public boolean topLimitTouched(){      
         return limitTop.get();
     }
 
-    private boolean bottomLimitTouched(){      
+    public boolean bottomLimitTouched(){      
         return limitBot.get(); 
     }
 
