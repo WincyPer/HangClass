@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //FALCON 500 (1)
 
-public class Elevator{
+public class HangElevator{
    
     //MOTORS
     private MotorController elevatorMotor;
@@ -29,7 +29,7 @@ public class Elevator{
     private double slowRetractSpeed = 0.30;
 
     //CONSTRUCTOR
-    public Elevator(MotorController elevMotor, DigitalInput limitSwitchTop, DigitalInput limitSwitchBottom, TalonFXSensorCollection elevEncoder){
+    public HangElevator(MotorController elevMotor, DigitalInput limitSwitchTop, DigitalInput limitSwitchBottom, TalonFXSensorCollection elevEncoder){
         elevatorMotor = elevMotor;
         limitTop = limitSwitchTop;
         limitBot = limitSwitchBottom;
@@ -43,19 +43,19 @@ public class Elevator{
     
     private elevatorState runState = elevatorState.STOP;        
 
-    public void elevatorExtend(){
+    public void setElevatorExtend(){
         runState = elevatorState.EXTEND;
     }
 
-    public void elevatorRetract(){
+    public void setElevatorRetract(){
         runState = elevatorState.RETRACT;
     }
 
-    public void elevatorStop(){
+    public void setElevatorStop(){
         runState = elevatorState.STOP;
     }
 
-    public void elevatorTest(){
+    public void setElevatorTest(){
         runState = elevatorState.TESTING;
     }
 
@@ -96,11 +96,11 @@ public class Elevator{
         elevatorMotor.set(retractSpeed);
     }
 
-    public void elevExtendSlow(){
+    public void extendSlow(){
         elevatorMotor.set(slowExtendSpeed);
     }
     
-    public void elevRetractSlow(){
+    public void retractSlow(){
         elevatorMotor.set(slowRetractSpeed);
     }
 
@@ -159,11 +159,11 @@ public class Elevator{
             break;
 
             case EXTEND:
-            extend();
+            elevExtend();
             break;
 
             case RETRACT:
-            retract();
+            elevRetract();
             break;
             
             case TESTING:
