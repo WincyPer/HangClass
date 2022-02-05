@@ -151,8 +151,11 @@ public class Hang {
 
     //  PIVOT METHODS  //
     private void pivotOutward(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(!backLimitTouched()){     //IF BACK LIMIT IS NOT TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
-            
+        if(backLimitTouched()){     //IF BACK LIMIT IS TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
+            pivotMotor.set(0);
+        }
+
+        else{       //ELSE (LIMIT IS TOUCHED), RUN PIVOT
             if(pivotEncoder.get() > outwardPivotPos){       //IF PIVOT ENCODER IS MORE THAN NEEDED COUNT, GO. OTHERWISE, STOP.
                 pivotMotor.set(outwardPivotSpeed);
             }
@@ -161,14 +164,14 @@ public class Hang {
                 pivotMotor.set(0);      
             }
         }
-
-        else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
-            pivotMotor.set(0);
-        }
     }
 
     private void pivotInward(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(!frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
+        if(frontLimitTouched()){   //IF FRONT LIMIT IS TOUCHED
+            pivotMotor.set(0);
+        }
+
+        else{       //ELSE (LIMIT IS TOUCHED), RUN PIVOT
             if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
                 pivotMotor.set(inwardPivotSpeed);
             }
@@ -176,10 +179,6 @@ public class Hang {
             else{   
                 pivotMotor.set(0);
             }
-        }
-
-        else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
-            pivotMotor.set(0);
         }
     }
 
