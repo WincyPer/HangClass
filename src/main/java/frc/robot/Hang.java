@@ -73,7 +73,7 @@ public class Hang {
 
     //PIVOT ENUMERATIONS
     private enum pivotStates{
-        PIVINWARD, PIVOUTWARD, TESTING, STOP
+        PIVINWARD, PIVOUTWARD, TESTING, MIDHANG, STOP
     }
     
     pivotStates pivotMode = pivotStates.STOP;   //DEFAULTS PIVOT MODE TO STOP 
@@ -84,6 +84,10 @@ public class Hang {
 
     public void setPivotOutward(){      
         pivotMode = pivotStates.PIVOUTWARD; 
+    }
+
+    public void setMidHang(){
+        pivotMode = pivotStates.MIDHANG;
     }
 
     public void setPivotTesting(){      
@@ -124,11 +128,11 @@ public class Hang {
     /////////////////////////////////////////////
 
     private boolean topLimitTouched(){      //CHECKS IF TOP SWITCH OF THE ELEVATOR IS REACHED
-        return topLimit.get();
+        return !topLimit.get();
     }
 
     private boolean bottomLimitTouched(){       //CHECKS IF BOTTOM SWITCH OF THE ELEVATOR IS REACHED
-        return botLimit.get(); 
+        return !botLimit.get(); 
     }
 
     private boolean upwardLimitReached(){                                                        //return true if past top encoder check
@@ -224,31 +228,31 @@ public class Hang {
 
     //  ELEVATOR METHODS  //
     private void elevExtendLim(){
-        if(!topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
-            if(upwardLimitReached()){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
-                elevatorMotor.set(extendSpeed);                                                          
-            }
-            else{       //EXTEND AT SLOW SPEED IF CLOSE TO TOP LIMIT                                                                            
-                elevatorMotor.set(slowExtendSpeed);                                                          
-            }
+        if(topLimitTouched()){
+            elevatorMotor.set(0);
         }
-        else{       //STOP WHEN TOP LIMIT IS TOUCHED                                             
-            elevatorMotor.set(0);                                                          
+        else{
+            if(elevatorEncoder.get() < closeTopLimit){              //and not close to limit
+                elevatorMotor.set(extendSpeed);                                                          //extend fast
+            }
+            else{                                                                           //if close to limit
+                elevatorMotor.set(slowExtendSpeed);                                                          //extend slow
+            }
         }
     }
 
     private void elevRetractLim(){
-        if(!bottomLimitTouched()){       //IF NOT AT BOTTOM LIMIT
-            if(downwardLimitReached()){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
-                elevatorMotor.set(retractSpeed);
-            }
-            else{       //EXTEND AT SLOW SPEED IF CLOSE TO BOTTOM LIMIT
-                elevatorMotor.set(slowRetractSpeed);
-            }
-        }
-        else{       //STOP WHEN BOTTOM LIMIT IS TOUCHED, RESETS ENCODER TO HOME POSITION
+        if(bottomLimitTouched()){
             elevatorMotor.set(0);
             elevatorEncoder.reset();
+        }
+        else{
+            if(elevatorEncoder.get() > closeBotLimit){
+                elevatorMotor.set(retractSpeed);
+            }
+            else{
+                elevatorMotor.set(slowRetractSpeed);
+            }
         }
     }
 
@@ -289,17 +293,17 @@ public class Hang {
         switch(setUpMidCount) {
             case 0: 
             //pivot outward 
-            if ((!backLimitTouched() || outwardLimitReached())) {
-                pivotOutward(); 
-            } else {
+            if ((backLimitTouched() || outwardLimitReached())) {
                 pivotStop();
                 setUpMidCount++; 
+            } else {
+                pivotOutward(); 
             }
             break; 
 
             case 1: 
             //elevator extend 
-            if (!topLimitTouched() || upwardLimitReached()) {
+            if (topLimitTouched() || upwardLimitReached()) {
                 elevExtend();
             } else {
                 if (!topLimitTouched()) {
@@ -462,6 +466,9 @@ public class Hang {
             case TESTING:
             pivotTesting();
             break; 
+
+            case MIDHANG:
+            midHangGrab();
 
             case STOP:
             pivotStop();

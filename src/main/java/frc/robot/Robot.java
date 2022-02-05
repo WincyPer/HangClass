@@ -111,21 +111,27 @@ public class Robot extends TimedRobot {
       hangClass.setElevatorStop();
     }
 
-    if (joystick.getRawButton(9)) {
-      hangClass.setPivotInward();
-    }
-
-    else if (joystick.getRawButton(10)){
-      hangClass.setPivotOutward();
-    }
-
-    else if (joystick.getRawButton(4)) {
+    
+    if (joystick.getRawButton(4)) {
       hangClass.setPivotTesting();
       hangClass.manualPivot(joystick.getY());
     }
 
+    else if (joystick.getRawButton(9)) {
+      hangClass.setMidHang();
+    }
+
+    else if (joystick.getRawButtonReleased(10)){
+      hangClass.overrideMidHang();
+    }
+
+    else if(joystick.getRawButton(5)){
+      hangClass.hangEncReset();
+    }
+
     else{
       hangClass.setPivotStop();
+      hangClass.setElevatorStop();
     }
 
     hangClass.run();
