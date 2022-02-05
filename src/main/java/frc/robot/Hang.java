@@ -44,7 +44,7 @@ public class Hang {
     private final double highHangGrab = -700.0; 
 
     //COUNTERS AND OTHER VARIABLES
-    private int setUpMidCount = 0;
+    public int setUpMidCount = 0;
     private int setUpHighCount = 0; 
 
     /////////////////////////////////////////////
@@ -132,19 +132,19 @@ public class Hang {
     }
 
     private boolean upwardLimitReached(){                                                        //return true if past top encoder check
-        return elevatorEncoder.get() > closeTopLimit;
+        return elevatorEncoder.get() < closeTopLimit;
     }
 
     private boolean downwardLimitReached(){                                                                //return true if past bottom encoder check
-        return elevatorEncoder.get() < closeBotLimit;
+        return elevatorEncoder.get() > closeBotLimit;
     }
 
     private boolean frontLimitTouched(){        //CHECKS IF FRONT SWITCH OF THE PIVOT ARMS IS REACHED
-        return frontLimit.get(); 
+        return !frontLimit.get(); 
     }
 
     private boolean backLimitTouched(){     //CHECKS IF BACK SWITCH OF THE PIVOT ARMS IS REACHED
-        return backLimit.get(); 
+        return !backLimit.get(); 
     }
 
     private boolean outwardLimitReached(){      //CHECKS IF PIVOT ENCODER REACHED OUTWARD
@@ -172,35 +172,34 @@ public class Hang {
 
     //  PIVOT METHODS  //
     private void pivotOutwardLim(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(!backLimitTouched()){     //IF BACK LIMIT IS NOT TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
-            
-            if(outwardLimitReached()){       //IF PIVOT ENCODER IS MORE THAN NEEDED COUNT, GO. OTHERWISE, STOP.
+        if(backLimitTouched()){
+            pivotMotor.set(0);
+        }
+
+        else{
+            if(outwardLimitReached()){
                 pivotMotor.set(outwardPivotSpeed);
             }
 
-            else{        
-                pivotMotor.set(0);      
+            else{
+                pivotMotor.set(0);
             }
-        }
-
-        else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
-            pivotMotor.set(0);
         }
     }
 
     private void pivotInwardLim(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(!frontLimitTouched()){   //IF FRONT LIMIT IS NOT TOUCHED
-            if(inwardLimitReached()){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
+        if(frontLimitTouched()){   //IF THE FRONT LIMIT IS NOT TOUCHED
+            pivotMotor.set(0);
+        }
+
+        else{
+            if(!inwardLimitReached()){    //IF THE PIVOT ENCODER IS LESS THAN ITS POSITION, PIVOT INWARD
                 pivotMotor.set(inwardPivotSpeed);
             }
 
-            else{   
+            else{   //STOP IF POSITION IS REACHED
                 pivotMotor.set(0);
             }
-        }
-
-        else{       //ELSE (LIMIT IS TOUCHED), TURN OFF MOTOR
-            pivotMotor.set(0);
         }
     }
 
@@ -422,6 +421,9 @@ public class Hang {
         }
     }
 
+    public void overrideMidHang(){      //DONT USE FOR ACTUAL ROBOT CODE, THIS IS FOR TESTING ON OLD ROBOT
+        setUpMidCount++;
+    }
 
     /////////////////////////////////////////////
     //                                         //
@@ -435,15 +437,15 @@ public class Hang {
         SmartDashboard.putNumber("PIVOT ENCODER", pivotEncoder.get());
         SmartDashboard.putString("PIVOT STATE", pivotMode.toString());
         SmartDashboard.putNumber("PIVOT SPEED", pivotMotor.get());
-        SmartDashboard.putBoolean("BACK LIMIT", backLimit.get());
-        SmartDashboard.putBoolean("FRONT LIMIT", frontLimit.get());
+        SmartDashboard.putBoolean("BACK LIMIT TOUCHED", backLimit.get());
+        SmartDashboard.putBoolean("FRONT LIMIT TOUCHED", frontLimit.get());
         SmartDashboard.putNumber("NAVX PITCH", navX.getPitch());
 
         SmartDashboard.putNumber("ELEVATOR ENCODER", elevatorEncoder.get());
         SmartDashboard.putNumber("ELEVATOR SPEED", elevatorMotor.get());
         SmartDashboard.putString("ELEVATOR STATE", elevatorMode.toString());
-        SmartDashboard.putBoolean("BOTTOM LIMIT", !botLimit.get());
-        SmartDashboard.putBoolean("TOP LIMIT", !topLimit.get());
+        SmartDashboard.putBoolean("BOTTOM LIMIT", botLimit.get());
+        SmartDashboard.putBoolean("TOP LIMIT", topLimit.get());
 
         SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount); 

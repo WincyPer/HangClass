@@ -50,14 +50,14 @@ public class Robot extends TimedRobot {
     pivotEncoder = new TalonEncoder(hangPivotMotor);
     elevatorEncoder = new TalonEncoder(hangElevatorMotor);
 
-    hangTopLimit = new DigitalInput(3);
-    hangBotLimit = new DigitalInput(4);
+    hangTopLimit = new DigitalInput(4);
+    hangBotLimit = new DigitalInput(3);
     hangFrontLimit = new DigitalInput(0);
     hangBackLimit = new DigitalInput(2);
     navX = new AHRS(SPI.Port.kMXP);
+    joystick = new Joystick (0);
 
     hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
-
 
   }
 
@@ -127,6 +127,8 @@ public class Robot extends TimedRobot {
     else{
       hangClass.setPivotStop();
     }
+
+    hangClass.run();
   }
 
   /** This function is called once when the robot is disabled. */
