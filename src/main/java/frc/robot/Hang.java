@@ -150,7 +150,7 @@ public class Hang {
     /////////////////////////////////////////////
 
     //  PIVOT METHODS  //
-    private void pivotOutward(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
+    private void pivotOutwardLim(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
         if(backLimitTouched()){     //IF BACK LIMIT IS TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
             pivotMotor.set(0);
         }
@@ -166,7 +166,7 @@ public class Hang {
         }
     }
 
-    private void pivotInward(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
+    private void pivotInwardLim(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
         if(frontLimitTouched()){   //IF FRONT LIMIT IS TOUCHED
             pivotMotor.set(0);
         }
@@ -182,11 +182,11 @@ public class Hang {
         }
     }
 
-    private void manualPivotOutward(){      //PIVOTS OUTWARD, UNLESS BACK LIMIT IS TOUCHED
+    private void pivotOutward(){      //PIVOTS OUTWARD, UNLESS BACK LIMIT IS TOUCHED
         pivotMotor.set(outwardPivotSpeed);
     }
 
-    private void manualPivotInward(){       //PIVOTS INWARD, UNLESS FRONT LIMIT IS TOUCHED
+    private void pivotInward(){       //PIVOTS INWARD, UNLESS FRONT LIMIT IS TOUCHED
         pivotMotor.set(inwardPivotSpeed);
     }
 
@@ -283,11 +283,11 @@ public class Hang {
         
         switch(pivotMode){
             case PIVINWARD:
-            pivotInward();
+            pivotInwardLim();
             break; 
 
             case PIVOUTWARD:
-            pivotOutward();
+            pivotOutwardLim();
             break; 
 
             case TESTING:
