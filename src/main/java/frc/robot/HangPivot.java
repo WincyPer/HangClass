@@ -33,22 +33,18 @@ public class HangPivot {
     private final double outwardPivotSpeed = -0.25;
     private final double grabbingHighPivotPos = -1400.0; 
 
-    private Timer timer;
-    private int timerTest; 
-
     /////////////////////////////////////////////
     //                                         //
     //              CONSTRUCTOR                //
     //                                         //
     /////////////////////////////////////////////
     
-    public HangPivot (MotorController pivotMotor, TalonEncoder hangPivotEncoder, AHRS gyro, DigitalInput frontLimitSwitch, DigitalInput backLimitSwitch, Timer hangTimer){  
+    public HangPivot (MotorController pivotMotor, TalonEncoder hangPivotEncoder, AHRS gyro, DigitalInput frontLimitSwitch, DigitalInput backLimitSwitch){  
         hangPivot = pivotMotor;
         pivotEncoder = hangPivotEncoder;
         frontSwitch = frontLimitSwitch;
         backSwitch = backLimitSwitch;
         navX = gyro;
-        timer = new Timer();
     }
 
     /////////////////////////////////////////////
@@ -187,7 +183,6 @@ public class HangPivot {
         SmartDashboard.putBoolean("FRONT LIMIT", frontSwitch.get());
         SmartDashboard.putNumber("PIVOT ENCODER", pivotEncoder.get());
         SmartDashboard.putNumber("NAVX PITCH", navX.getPitch());
-        SmartDashboard.putNumber("MID PIVOT CASE", timerTest);
         
         switch(pivotState){
             
