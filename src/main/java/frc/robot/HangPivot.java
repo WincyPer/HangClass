@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.Timer;
 
 public class HangPivot {
     
@@ -27,8 +28,13 @@ public class HangPivot {
     //  VARIABLES [SUBJECT TO CHANGE]  //
     private final double inwardPivotPos = -1100.0;
     private final double outwardPivotPos = -1500.0;
+    private final double midPivotPos = -1300.0; 
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
+
+    private int pivotHangCounter = 0;
+    private Timer timer;
+    private int timerTest; 
 
     /////////////////////////////////////////////
     //                                         //
@@ -36,12 +42,13 @@ public class HangPivot {
     //                                         //
     /////////////////////////////////////////////
     
-    public HangPivot (MotorController pivotMotor, TalonEncoder hangPivotEncoder, AHRS gyro, DigitalInput frontLimitSwitch, DigitalInput backLimitSwitch){  
+    public HangPivot (MotorController pivotMotor, TalonEncoder hangPivotEncoder, AHRS gyro, DigitalInput frontLimitSwitch, DigitalInput backLimitSwitch, Timer hangTimer){  
         hangPivot = pivotMotor;
         pivotEncoder = hangPivotEncoder;
         frontSwitch = frontLimitSwitch;
         backSwitch = backLimitSwitch;
         navX = gyro;
+        timer = new Timer();
     }
 
     /////////////////////////////////////////////
@@ -78,13 +85,25 @@ public class HangPivot {
     //                 CHECKS                  //
     //                                         //
     /////////////////////////////////////////////
-
-    private boolean backLimitTouched(){     //RETURNS VALUE OF BACK LIMIT SWITCH
+    //DIRECTIONS ARE NOT FINAL
+    public boolean backLimitTouched(){     //RETURNS VALUE OF BACK LIMIT SWITCH
         return backSwitch.get();
     }
 
-    private boolean frontLimitTouched(){    //RETURNS VALUE OF FRONT LIMIT SWITCH
+    public boolean frontLimitTouched(){    //RETURNS VALUE OF FRONT LIMIT SWITCH
         return frontSwitch.get();
+    }
+
+    public boolean outwardLimitReached(){      //CHECKS IF PIVOT ENCODER REACHED OUTWARD
+        return pivotEncoder.get() > outwardPivotPos;
+    }
+
+    public boolean inwardLimitReached(){       //CHECKS IF PIVOT ENCODER REACHED INWARD
+        return pivotEncoder.get() < inwardPivotPos;
+    }
+
+    public boolean afterMidLimit() {
+        return pivotEncoder.get() < midPivotPos; 
     }
 
     /////////////////////////////////////////////
@@ -97,9 +116,13 @@ public class HangPivot {
         pivotEncoder.reset();
     }
 
-    private void pivotOutward(){    //PIVOTS OUTWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS [INWARD = TOWARDS ROBOT BASE, OUTWARD = TOWARDS ROBOT PERIMETER]
+    public void pivotOutwardLim(){    //PIVOTS OUTWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS [INWARD = TOWARDS ROBOT BASE, OUTWARD = TOWARDS ROBOT PERIMETER]
         if(backLimitTouched()){
-            if(pivotEncoder.get() > outwardPivotPos){
+            hangPivot.set(0);
+        }
+
+        else{
+            if(outwardLimitReached()){
                 hangPivot.set(outwardPivotSpeed);
             }
 
@@ -107,15 +130,15 @@ public class HangPivot {
                 hangPivot.set(0);
             }
         }
-
-        else{
-            hangPivot.set(0);
-        }
     }
 
-    private void pivotInward(){     //PIVOTS INWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS
+    public void pivotInwardLim(){     //PIVOTS INWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS
         if(frontLimitTouched()){   //IF THE FRONT LIMIT IS NOT TOUCHED
-            if(pivotEncoder.get() < inwardPivotPos){    //IF THE PIVOT ENCODER IS LESS THAN ITS POSITION, PIVOT INWARD
+            hangPivot.set(0);
+        }
+
+        else{
+            if(inwardLimitReached()){    //IF THE PIVOT ENCODER IS LESS THAN ITS POSITION, PIVOT INWARD
                 hangPivot.set(inwardPivotSpeed);
             }
 
@@ -123,43 +146,28 @@ public class HangPivot {
                 hangPivot.set(0);
             }
         }
-
-        else{
-            hangPivot.set(0);
-        }
     }
 
-    private void manualPivotOutward(){      //MANUALLY PIVOT OUTWARD
-        if(backLimitTouched()){        //
-            hangPivot.set(outwardPivotSpeed);
-        }
-
-        else{
-            hangPivot.set(0);
-        }
+    public void pivotOutward(){      //MANUALLY PIVOT OUTWARD
+        hangPivot.set(outwardPivotSpeed);
     }
 
-    private void manualPivotInward(){       //MANUALLY PIVOT INWARD
-        if(frontLimitTouched()){       //IF THE FRONT LIMIT IS NOT TOUCHED, PIVOT INWARD
-            hangPivot.set(inwardPivotSpeed);       
-        }
-
-        else{
-            hangPivot.set(0);
-        }
+    public void pivotInward(){       //MANUALLY PIVOT INWARD
+        hangPivot.set(inwardPivotSpeed);       
     }
 
     public void manualPivot(double pivotSpeed){     //MANUALLY MOVE THE PIVOT MOTOR WITH JOYSTICK
         hangPivot.set(pivotSpeed);
     }
 
-    private void stopPivot(){       //STOPS HANG PIVOT
+    public void stopPivot(){       //STOPS HANG PIVOT
         hangPivot.set(0);
     }
 
-    private void testing(){     //METHOD FOR TESTING CODE (NOTHING)
-    
+    private void testing(){
+
     }
+    
 
     /////////////////////////////////////////////
     //                                         //
@@ -175,6 +183,7 @@ public class HangPivot {
         SmartDashboard.putBoolean("FRONT LIMIT", frontSwitch.get());
         SmartDashboard.putNumber("PIVOT ENCODER", pivotEncoder.get());
         SmartDashboard.putNumber("NAVX PITCH", navX.getPitch());
+        SmartDashboard.putNumber("MID PIVOT CASE", timerTest);
         
         switch(pivotState){
             
