@@ -37,10 +37,11 @@ public class Hang {
     private AHRS navX;
 
     private final double inwardPivotPos = -600.0; //INWARD POSITION FOR THE ANGLES OF HIGH HANG & UP
+    private final double midPivotPos = -800.0;
     private final double outwardPivotPos = -1500.0; //OUTWARD POSITION FOR GETTING ONTO RUNG
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
-    private final double highHangPivot = -700.0; 
+    private final double highHangGrab = -700.0; 
 
     //COUNTERS AND OTHER VARIABLES
     private int setUpMidCount = 0;
@@ -130,12 +131,32 @@ public class Hang {
         return botLimit.get(); 
     }
 
+    private boolean upwardLimitReached(){
+        return elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit;    //TRUE IF PAST TOP ENCODER CHECK 
+    }
+
+    private boolean downwardLimitReached() {
+        return elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit;    //TRUE IF PAST BOTTOM ENCODER CHECK
+    }
+
     private boolean frontLimitTouched(){        //CHECKS IF FRONT SWITCH OF THE PIVOT ARMS IS REACHED
         return frontLimit.get(); 
     }
 
     private boolean backLimitTouched(){     //CHECKS IF BACK SWITCH OF THE PIVOT ARMS IS REACHED
         return backLimit.get(); 
+    }
+
+    private boolean outwardLimitReached(){  //CHECKS IF PIVOT ENCODER REACHED OUTWARD 
+        return pivotEncoder.get() > outwardPivotPos; 
+    }
+
+    private boolean inwardLimitReached(){  //CHECKS IF PIVOT ENCODER REACHED INWARD 
+        return pivotEncoder.get() < inwardPivotPos; 
+    }
+
+    private boolean midLimitReached(){  //CHECKS IF PIVOT ENCODER REACHED MIDDLE
+        return pivotEncoder.get() < midPivotPos; 
     }
 
     public void hangEncReset(){     //RESETTING BOTH PIVOT AND ELEVATOR ENCODERS
@@ -152,11 +173,11 @@ public class Hang {
     //  PIVOT METHODS  //
     private void pivotOutwardLim(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
         if(backLimitTouched()){     //IF BACK LIMIT IS TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
-            pivotMotor.set(0);
+            pivotMotor.set(0);  //SET SPEED TO 0
         }
 
-        else{       //ELSE (LIMIT IS TOUCHED), RUN PIVOT
-            if(pivotEncoder.get() > outwardPivotPos){       //IF PIVOT ENCODER IS MORE THAN NEEDED COUNT, GO. OTHERWISE, STOP.
+        else{     
+            if(outwardLimitReached()){      //ELSE IF LIMIT IS NOT TOUCHED PIVOT OUTWARD
                 pivotMotor.set(outwardPivotSpeed);
             }
 
@@ -168,11 +189,11 @@ public class Hang {
 
     private void pivotInwardLim(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
         if(frontLimitTouched()){   //IF FRONT LIMIT IS TOUCHED
-            pivotMotor.set(0);
+            pivotMotor.set(0);     // SET SPEED TO 0 
         }
 
-        else{       //ELSE (LIMIT IS TOUCHED), RUN PIVOT
-            if(pivotEncoder.get() < inwardPivotPos){        //IF PIVOT ENCODER IS LESS THAN NEEDED COUNT, GO. OTHERWISE, STOP.  
+        else{       
+            if(!inwardLimitReached()){        //ELSE IF FRONT LIMIT IS NOT TOUCHED PIVOT INWARD  
                 pivotMotor.set(inwardPivotSpeed);
             }
 
@@ -202,41 +223,45 @@ public class Hang {
     }
 
     //  ELEVATOR METHODS  //
-    private void elevExtend(){
-        if(!topLimitTouched()){      //IF NOT AT TOP LIMIT                                                        
-            if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
-                elevatorMotor.set(extendSpeed);                                                          
+    private void elevExtendLim(){
+        if(topLimitTouched()){     //IF TOP LIMIT TOUCHED                                                         
+            elevatorStop();  //STOP ELEVATOR
+        } else {
+            if (upwardLimitReached()) {   //ELSE IF TOP LIMIT IS NOT TOUCHED, EXTEND UNTIL TOP LIMIT IS TOUCHED 
+                elevatorMotor.set(slowExtendSpeed); 
+            } else {
+                elevatorMotor.set(extendSpeed); 
             }
-            else{       //EXTEND AT SLOW SPEED IF CLOSE TO TOP LIMIT                                                                            
-                elevatorMotor.set(slowExtendSpeed);                                                          
-            }
-        }
-        else{       //STOP WHEN TOP LIMIT IS TOUCHED                                             
-            elevatorMotor.set(0);                                                          
         }
     }
 
-    private void elevRetract(){
-        if(!bottomLimitTouched()){       //IF NOT AT BOTTOM LIMIT
-            if(elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit){      //EXTEND AT NORMAL SPEED IF ELEVATOR IS NOT CLOSE TO LIMIT
-                elevatorMotor.set(retractSpeed);
+    private void elevRetractLim(){
+        if(bottomLimitTouched()){       //IF BOTTOM LIMIT IS TOUCHED 
+            elevatorStop();             //STOP ELEVATOR
+            elevatorEncoder.setIntegratedSensorPosition(0, 0); 
+        } else {
+            if (downwardLimitReached()) {   //ELSE IF BOTTOM LIMIT IS NOT TOUCHED, RETRACT UNTIL BOTTOM LIMIT IS TOUCHED 
+                elevatorMotor.set(slowRetractSpeed); 
+            } else {
+                elevatorMotor.set(retractSpeed); 
             }
-            else{       //EXTEND AT SLOW SPEED IF CLOSE TO BOTTOM LIMIT
-                elevatorMotor.set(slowRetractSpeed);
-            }
-        }
-        else{       //STOP WHEN BOTTOM LIMIT IS TOUCHED, RESETS ENCODER TO HOME POSITION
-            elevatorMotor.set(0);
-            elevatorEncoder.setIntegratedSensorPosition(0, 0);
         }
     }
 
-    private void manualElevExtend(){                                          //set speed to extend
+    private void elevExtend(){                                          //set speed to extend
         elevatorMotor.set(extendSpeed);
     }                
     
-    private void manualElevRetract(){
+    private void elevRetract(){
         elevatorMotor.set(retractSpeed);
+    }
+
+    private void extendSlow(){
+        elevatorMotor.set(slowExtendSpeed); 
+    }
+
+    private void retractSlow(){
+        elevatorMotor.set(slowRetractSpeed); 
     }
 
     public void manualElevator(double joystickY){       //PIVOTS TO A GIVEN SPEED, USE FOR TESTING

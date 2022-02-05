@@ -32,6 +32,7 @@ public class Robot extends TimedRobot {
   private DigitalInput hangBotLimit;
   private DigitalInput hangFrontLimit;
   private DigitalInput hangBackLimit;
+  private DigitalInput testLimit;
   private AHRS navX;
 
   private Joystick joystick;
@@ -54,7 +55,10 @@ public class Robot extends TimedRobot {
     hangBotLimit = new DigitalInput(1);
     hangFrontLimit = new DigitalInput(2);
     hangBackLimit = new DigitalInput(3);
+    testLimit = new DigitalInput(5);
     navX = new AHRS(SPI.Port.kMXP);
+
+    joystick = new Joystick(0);
 
     hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
 
@@ -63,7 +67,8 @@ public class Robot extends TimedRobot {
 
  
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+  }
 
 
   @Override
@@ -86,6 +91,7 @@ public class Robot extends TimedRobot {
     }
   }
 
+
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {}
@@ -93,7 +99,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    
+    SmartDashboard.putBoolean("Test Limit:", testLimit.get());
+
     if(joystick.getRawButton(7)){
       hangClass.setElevatorRetract();
     }
