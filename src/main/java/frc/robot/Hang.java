@@ -224,26 +224,30 @@ public class Hang {
 
     //  ELEVATOR METHODS  //
     private void elevExtendLim(){
-        if(topLimitTouched()){     //IF TOP LIMIT TOUCHED                                                         
-            elevatorStop();  //STOP ELEVATOR
-        } else {
-            if (upwardLimitReached()) {   //ELSE IF TOP LIMIT IS NOT TOUCHED, EXTEND UNTIL TOP LIMIT IS TOUCHED 
-                elevatorMotor.set(slowExtendSpeed); 
-            } else {
-                elevatorMotor.set(extendSpeed); 
+        if(topLimitTouched()){
+            elevatorMotor.set(0);
+        }
+        else{
+            if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){              //and not close to limit
+                elevatorMotor.set(extendSpeed);                                                          //extend fast
+            }
+            else{                                                                           //if close to limit
+                elevatorMotor.set(slowExtendSpeed);                                                          //extend slow
             }
         }
     }
 
     private void elevRetractLim(){
-        if(bottomLimitTouched()){       //IF BOTTOM LIMIT IS TOUCHED 
-            elevatorStop();             //STOP ELEVATOR
-            elevatorEncoder.setIntegratedSensorPosition(0, 0); 
-        } else {
-            if (downwardLimitReached()) {   //ELSE IF BOTTOM LIMIT IS NOT TOUCHED, RETRACT UNTIL BOTTOM LIMIT IS TOUCHED 
-                elevatorMotor.set(slowRetractSpeed); 
-            } else {
-                elevatorMotor.set(retractSpeed); 
+        if(bottomLimitTouched()){
+            elevatorMotor.set(0);
+            elevatorEncoder.setIntegratedSensorPosition(0, 0);
+        }
+        else{
+            if(elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit){
+                elevatorMotor.set(retractSpeed);
+            }
+            else{
+                elevatorMotor.set(slowRetractSpeed);
             }
         }
     }
@@ -300,8 +304,8 @@ public class Hang {
         SmartDashboard.putNumber("ELEVATOR ENCODER", elevatorEncoder.getIntegratedSensorPosition());
         SmartDashboard.putNumber("ELEVATOR SPEED", elevatorMotor.get());
         SmartDashboard.putString("ELEVATOR STATE", elevatorMode.toString());
-        SmartDashboard.putBoolean("BOTTOM LIMIT", !botLimit.get());
-        SmartDashboard.putBoolean("TOP LIMIT", !topLimit.get());
+        SmartDashboard.putBoolean("BOTTOM LIMIT", botLimit.get());
+        SmartDashboard.putBoolean("TOP LIMIT", topLimit.get());
 
         SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount); 
