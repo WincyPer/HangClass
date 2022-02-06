@@ -266,6 +266,6 @@ public class Hang {
 
         pivot.run(); 
         elevator.run();
-        
+
     }
 }
