@@ -24,9 +24,9 @@ public class HangElevator{
     private double closeTopLimit = 0.50* 2094;                  //close to top limit switch enc. value         
     private double closeBotLimit = 600;                         //close to bottom limit switch enc. value
     private double extendSpeed = 0.40;                          //counter-clockwise to extend (-speed)
-    private double slowExtendSpeed = 0.30;
+    private double slowExtendSpeed = 0.3;
     private double retractSpeed = -0.40;                         //clockwise to retract (+speed)
-    private double slowRetractSpeed = -0.30;
+    private double slowRetractSpeed = -0.3;
 
     //CONSTRUCTOR
     public HangElevator(MotorController elevMotor, DigitalInput limitSwitchTop, DigitalInput limitSwitchBottom, TalonEncoder elevEncoder){

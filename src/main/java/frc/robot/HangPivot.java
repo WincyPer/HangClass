@@ -111,7 +111,7 @@ public class HangPivot {
     }
 
     public boolean middleEncReached() {     //CHECKS IF PIVOT IS PERPENDICULAR TO FLOOR
-        return pivotEncoder.getPosition() < midPivotPos; 
+        return Math.abs(pivotEncoder.getPosition()) < midPivotPos; 
     }
 
     /////////////////////////////////////////////

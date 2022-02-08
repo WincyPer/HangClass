@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Hang {
     //MASTER
@@ -24,6 +25,8 @@ public class Hang {
     public int setUpMidCount = 0;
     private int setUpHighCount = 0; 
 
+    private Timer timer;
+
     /////////////////////////////////////////////
     //                                         //
     //              CONSTRUCTOR                //
@@ -33,6 +36,7 @@ public class Hang {
     public Hang (HangPivot Pivot, HangElevator Elevator){
         elevator = Elevator;
         pivot = Pivot;
+        timer = new Timer();
     }
 
     /////////////////////////////////////////////
@@ -83,9 +87,7 @@ public class Hang {
         setUpHighCount = 0; 
     }    
 
-    private void testing(){
-
-    }
+    private void testing(){}
 
     private void midHangGrab() {
         switch(setUpMidCount) {
@@ -101,58 +103,69 @@ public class Hang {
 
             case 1: 
             //elevator extend 
-            if (elevator.topLimitTouched() || elevator.topEncoderLimitReached()) {      //If the top limit of elevator is touched || enc limit is reached, STOP
+            if (elevator.topLimitTouched()) {      //If the top limit of elevator is touched || enc limit is reached, STOP
                 elevator.setElevatorStop();
                 setUpMidCount++; 
             } else {
-                if (!elevator.topLimitTouched()) {                                      //else if top limit isn't touched but close to top, extend slowly 
-                    elevator.setElevatorExtendSlow();
+                if (!elevator.topEncoderLimitReached()) {                                      //else if top limit isn't touched but close to top, extend slowly 
+                    elevator.setElevatorExtend();
                 } else {
-                    elevator.setElevatorExtend();                                         // else extend at normal speed 
+                    elevator.setElevatorExtendSlow();                                         // else extend at normal speed 
                 }
             }
             break; 
 
             case 2: 
-            // elevator retract 
-            if (elevator.bottomLimitTouched() || elevator.botEncoderLimitReached()) {   // if bottom limit is touched || bottom encoder limit is reached, 
-                elevator.setElevatorStop();   
-                setUpMidCount++;                                           // stop
-            } else {
-                if(!elevator.bottomLimitTouched()) {                                    // else if close to bottom limit 
-                    elevator.setElevatorRetractSlow();                                  // retract slowly 
-                } else {
-                    elevator.setElevatorRetract();                                      // else retract at normal speed 
-                }
+            timer.start(); 
+            if (timer.get() >= 5) {
+                timer.stop(); 
+                setUpMidCount++; 
             }
-            break; 
+            break;  
 
             case 3: 
-            //pivot to mid
-            if (!pivot.middleEncReached() ) {                                      // if middle encoder limit isn't reached 
-                pivot.setPivInward();                                              // pivot inward 
-            } else {
-                pivot.setStop();                                                   // else stop
-                setUpMidCount++; 
+            // elevator retract 
+            timer.reset(); 
+            if (elevator.bottomLimitTouched()) {   // if bottom limit is touched || bottom encoder limit is reached, 
+                elevator.setElevatorStop();   
+                setUpMidCount++;                                           // stop
+            } 
+            else {
+                if(!elevator.botEncoderLimitReached()) {                                    // else if close to bottom limit 
+                    elevator.setElevatorRetract();                                  // retract slowly 
+                } else {
+                    elevator.setElevatorRetractSlow();                                      // else retract at normal speed 
+                }
             }
             break; 
 
             case 4: 
-            //elevator extend
-            if (!elevator.topLimitTouched()|| !elevator.topEncoderLimitReached()) {  // if neither top limit is reached 
-                elevator.setElevatorExtend();                                        // extend at normal speed 
+            // pivot to mid
+            if(pivot.middleEncReached()){
+                pivot.setStop();
+                setUpMidCount++;
             }
-            else {
-
-                if(!elevator.topLimitTouched()){                                    // else if close to top limit 
-                    elevator.setElevatorExtendSlow();                               // extend slowly 
-                }
-
-                else{
-                    elevator.setElevatorStop();                                     // else stop 
-                }
-                
+            else{
+                pivot.setPivInward();
             }
+            
+            break; 
+
+            case 5:
+            if (elevator.topLimitTouched()) {      //If the top limit of elevator is touched || enc limit is reached, STOP
+                elevator.setElevatorStop();
+                setUpMidCount++; 
+            } else {
+                if (!elevator.topEncoderLimitReached()) {                                      //else if top limit isn't touched but close to top, extend slowly 
+                    elevator.setElevatorExtend();
+                } else {
+                    elevator.setElevatorExtendSlow();                                         // else extend at normal speed 
+                }
+            }
+            break; 
+
+            case 6: 
+            timer.reset(); 
             break; 
         }
     }
@@ -254,6 +267,7 @@ public class Hang {
         SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount);
         SmartDashboard.putString("HANG STATE", hangMode.toString());
+        SmartDashboard.putNumber("TIMER", timer.get()); 
 
         switch(hangMode){
             case MIDHANG:
