@@ -14,6 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
+import org.ejml.ops.ReadMatrixCsv;
 
 
 public class Robot extends TimedRobot {
@@ -23,10 +29,11 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   //HANG MOTORS AND SENSORS
-  private WPI_TalonSRX hangPivotMotor;
-  private WPI_TalonFX hangElevatorMotor;
-  private TalonEncoder pivotEncoder;
-  private TalonFXSensorCollection elevatorEncoder;
+  private CANSparkMax hangPivotMotor;
+  private CANSparkMax hangPivotMotorTwo; 
+  private WPI_TalonSRX hangElevatorMotor;
+  private RelativeEncoder pivotEncoder;
+  private TalonEncoder elevatorEncoder;
   
   private DigitalInput hangTopLimit;
   private DigitalInput hangBotLimit;
@@ -48,20 +55,21 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
                                             //PORT NUMBERS ARE NOT FINAL FOR THE NEW ROBOT
-    hangPivotMotor = new WPI_TalonSRX(0);
-    hangElevatorMotor = new WPI_TalonFX(0);
-    pivotEncoder = new TalonEncoder(hangPivotMotor);
-    elevatorEncoder = new TalonFXSensorCollection(hangElevatorMotor);
+    hangPivotMotor = new CANSparkMax(11, MotorType.kBrushless);
+    hangPivotMotorTwo = new CANSparkMax(12, MotorType.kBrushless); 
+    hangElevatorMotor = new WPI_TalonSRX(3);
+    pivotEncoder = hangPivotMotor.getEncoder();
+    elevatorEncoder = new TalonEncoder(hangElevatorMotor);
 
-    hangTopLimit = new DigitalInput(0);
-    hangBotLimit = new DigitalInput(1);
-    hangFrontLimit = new DigitalInput(2);
-    hangBackLimit = new DigitalInput(3);
+    hangTopLimit = new DigitalInput(4);
+    hangBotLimit = new DigitalInput(3);
+    hangFrontLimit = new DigitalInput(1);
+    hangBackLimit = new DigitalInput(5);
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
 
-    pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
+    pivot = new HangPivot(hangPivotMotor, hangPivotMotorTwo, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
     hangClass = new Hang(pivot, elevator);
 
@@ -127,6 +135,11 @@ public class Robot extends TimedRobot {
     else if(joystick.getRawButton(7))
     {
       hangClass.setTesting();
+    }
+
+    else if (joystick.getRawButton(8)){
+      pivot.resetEnc();
+      elevator.encoderReset();
     }
 
     else 

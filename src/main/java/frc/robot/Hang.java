@@ -228,10 +228,12 @@ public class Hang {
     }
 
     public void manualPivot(double pivSpeed){
+        pivot.setTesting();
         pivot.manualPivot(pivSpeed);
     }
 
     public void manualElevator(double elevSpeed){
+        elevator.setElevatorTest();
         elevator.manualElev(elevSpeed);
     }
 
@@ -251,6 +253,7 @@ public class Hang {
         //SMART DASHBOARD DISPLAYS
         SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount);
+        SmartDashboard.putString("HANG STATE", hangMode.toString());
 
         switch(hangMode){
             case MIDHANG:
