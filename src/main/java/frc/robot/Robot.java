@@ -32,7 +32,6 @@ public class Robot extends TimedRobot {
   private DigitalInput hangBotLimit;
   private DigitalInput hangFrontLimit;
   private DigitalInput hangBackLimit;
-  private DigitalInput testLimit;
   private AHRS navX;
 
   private Joystick joystick;
@@ -58,7 +57,6 @@ public class Robot extends TimedRobot {
     hangBotLimit = new DigitalInput(1);
     hangFrontLimit = new DigitalInput(2);
     hangBackLimit = new DigitalInput(3);
-    testLimit = new DigitalInput(5);
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
@@ -108,22 +106,29 @@ public class Robot extends TimedRobot {
     {
       hangClass.setMidHang();
     }
+
     else if(joystick.getRawButton(4))
     {
       hangClass.setHighHang();
     } 
+
     else if(joystick.getRawButton(5))
     {
       hangClass.setPivotManual();
+      hangClass.manualPivot(joystick.getY());
     }
+
     else if(joystick.getRawButton(6))
     {
       hangClass.setElevatorManual();
+      hangClass.manualElevator(joystick.getY());
     }
+
     else if(joystick.getRawButton(7))
     {
       hangClass.setTesting();
     }
+
     else 
     {
       hangClass.setNothing();

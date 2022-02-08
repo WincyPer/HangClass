@@ -13,6 +13,7 @@ public class Hang {
     //                VARIABLES                //
     //                                         //
     ///////////////////////////////////////////// 
+    
     //ELEVATOR
     private HangElevator elevator;
 
@@ -29,7 +30,7 @@ public class Hang {
     //                                         //
     /////////////////////////////////////////////
 
-    public Hang(HangPivot Pivot, HangElevator Elevator){
+    public Hang (HangPivot Pivot, HangElevator Elevator){
         elevator = Elevator;
         pivot = Pivot;
     }
@@ -90,7 +91,7 @@ public class Hang {
         switch(setUpMidCount) {
             case 0: 
             //pivot outward 
-            if ((pivot.backLimitTouched() || pivot.outwardEncReached())) {      //If the back limit of pivot is touched OR enc. limit is reached, STOP
+            if ((pivot.backLimitTouched() || pivot.outwardEncReached())) {      //If the back limit of pivot is touched OR back enc. limit is reached, STOP
                 pivot.setStop();
                 setUpMidCount++; 
             } else {                                                            //Else, pivot outward
@@ -224,6 +225,14 @@ public class Hang {
             }
             break; 
         }
+    }
+
+    public void manualPivot(double pivSpeed){
+        pivot.manualPivot(pivSpeed);
+    }
+
+    public void manualElevator(double elevSpeed){
+        elevator.manualElev(elevSpeed);
     }
 
     private void stop(){
