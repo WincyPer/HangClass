@@ -13,38 +13,15 @@ public class Hang {
     //                VARIABLES                //
     //                                         //
     ///////////////////////////////////////////// 
-
-    //ELEVATOR MOTOR                                        //NUMBERS ARE NOT FINAL, STILL NEED TO FIND CORRECT NUMBERS
-    private MotorController elevatorMotor;
-    private TalonFXSensorCollection elevatorEncoder;
-    private DigitalInput topLimit;                  
-    private DigitalInput botLimit;
-
-    private double closeTopLimit = 0.50 * 2094;                
-    private double closeBotLimit = 600; 
-    private double extendSpeed = 0.40;
-    private double slowExtendSpeed = 0.30;
-    private double retractSpeed = -0.40;
-    private double slowRetractSpeed = -0.30;
-
-    private final double highHangElevator = 800.0; 
     
-    //PIVOT MOTOR
-    private MotorController pivotMotor;
-    private TalonEncoder pivotEncoder; 
-    private DigitalInput frontLimit;   
-    private DigitalInput backLimit;
-    private AHRS navX;
+    //ELEVATOR
+    private HangElevator elevator;
 
-    private final double inwardPivotPos = -600.0; //INWARD POSITION FOR THE ANGLES OF HIGH HANG & UP
-    private final double midPivotPos = -800.0;
-    private final double outwardPivotPos = -1500.0; //OUTWARD POSITION FOR GETTING ONTO RUNG
-    private final double inwardPivotSpeed = 0.25;
-    private final double outwardPivotSpeed = -0.25;
-    private final double highHangGrab = -700.0; 
+    //PIVOT
+    private HangPivot pivot;
 
     //COUNTERS AND OTHER VARIABLES
-    private int setUpMidCount = 0;
+    public int setUpMidCount = 0;
     private int setUpHighCount = 0; 
 
     /////////////////////////////////////////////
@@ -53,16 +30,9 @@ public class Hang {
     //                                         //
     /////////////////////////////////////////////
 
-    public Hang(MotorController elevMotor, DigitalInput limitSwitchTop, DigitalInput limitSwitchBottom, TalonFXSensorCollection elevEncoder, MotorController hangPivotMotor, TalonEncoder hangPivotEncoder, AHRS gyro, DigitalInput frontLimitSwitch, DigitalInput backLimitSwitch ){
-        elevatorMotor = elevMotor;
-        elevatorEncoder = elevEncoder;
-        topLimit = limitSwitchTop;
-        botLimit = limitSwitchBottom;
-        pivotMotor = hangPivotMotor;
-        pivotEncoder = hangPivotEncoder;
-        frontLimit = frontLimitSwitch;
-        backLimit = backLimitSwitch;
-        navX = gyro;
+    public Hang (HangPivot Pivot, HangElevator Elevator){
+        elevator = Elevator;
+        pivot = Pivot;
     }
 
     /////////////////////////////////////////////
@@ -72,96 +42,34 @@ public class Hang {
     /////////////////////////////////////////////
 
     //PIVOT ENUMERATIONS
-    private enum pivotStates{
-        PIVINWARD, PIVOUTWARD, TESTING, STOP
+    private enum hangStates{
+        MIDHANG, HIGHHANG, PIVOTMANUAL, ELEVATORMANUAL, TESTING, NOTHING
     }
     
-    pivotStates pivotMode = pivotStates.STOP;   //DEFAULTS PIVOT MODE TO STOP 
+    private hangStates hangMode = hangStates.NOTHING; 
 
-    public void setPivotInward(){       //SETS TO PIVOT INWARD, REST OF METHODS FOLLOW RESPECTIVES STATES
-        pivotMode = pivotStates.PIVINWARD; 
+    public void setMidHang() {
+        hangMode = hangStates.MIDHANG; 
     }
 
-    public void setPivotOutward(){      
-        pivotMode = pivotStates.PIVOUTWARD; 
+    public void setHighHang() {
+        hangMode = hangStates.HIGHHANG; 
     }
 
-    public void setPivotTesting(){      
-        pivotMode = pivotStates.TESTING; 
+    public void setPivotManual() {
+        hangMode = hangStates.PIVOTMANUAL; 
     }
 
-    public void setPivotStop(){     
-        pivotMode = pivotStates.STOP; 
+    public void setElevatorManual() {
+        hangMode = hangStates.ELEVATORMANUAL; 
     }
 
-    //ELEVATOR ENUMERATIONS
-    private enum elevatorStates{
-        EXTEND, RETRACT, TESTING, STOP
+    public void setTesting() {
+        hangMode = hangStates.TESTING; 
     }
 
-    elevatorStates elevatorMode = elevatorStates.STOP;      //DEFAULTS ELEVATOR MODE TO STOP
-
-    public void setElevatorExtend(){        //SETS TO ELEVATOR EXTEND, REST OF METHODS FOLLOW RESPECTIVE STATES
-        elevatorMode = elevatorStates.EXTEND;       
-    }
-
-    public void setElevatorRetract(){
-        elevatorMode = elevatorStates.RETRACT; 
-    }
-
-    public void setElevatorTesting(){
-        elevatorMode = elevatorStates.TESTING; 
-    }
-
-    public void setElevatorStop(){
-        elevatorMode = elevatorStates.STOP; 
-    }
-
-    /////////////////////////////////////////////
-    //                                         //
-    //                  CHECKS                 //
-    //                                         //
-    /////////////////////////////////////////////
-
-    private boolean topLimitTouched(){      //CHECKS IF TOP SWITCH OF THE ELEVATOR IS REACHED
-        return topLimit.get();
-    }
-
-    private boolean bottomLimitTouched(){       //CHECKS IF BOTTOM SWITCH OF THE ELEVATOR IS REACHED
-        return botLimit.get(); 
-    }
-
-    private boolean upwardLimitReached(){
-        return elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit;    //TRUE IF PAST TOP ENCODER CHECK 
-    }
-
-    private boolean downwardLimitReached() {
-        return elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit;    //TRUE IF PAST BOTTOM ENCODER CHECK
-    }
-
-    private boolean frontLimitTouched(){        //CHECKS IF FRONT SWITCH OF THE PIVOT ARMS IS REACHED
-        return frontLimit.get(); 
-    }
-
-    private boolean backLimitTouched(){     //CHECKS IF BACK SWITCH OF THE PIVOT ARMS IS REACHED
-        return backLimit.get(); 
-    }
-
-    private boolean outwardLimitReached(){  //CHECKS IF PIVOT ENCODER REACHED OUTWARD 
-        return pivotEncoder.get() > outwardPivotPos; 
-    }
-
-    private boolean inwardLimitReached(){  //CHECKS IF PIVOT ENCODER REACHED INWARD 
-        return pivotEncoder.get() < inwardPivotPos; 
-    }
-
-    private boolean midLimitReached(){  //CHECKS IF PIVOT ENCODER REACHED MIDDLE
-        return pivotEncoder.get() < midPivotPos; 
-    }
-
-    public void hangEncReset(){     //RESETTING BOTH PIVOT AND ELEVATOR ENCODERS
-        pivotEncoder.reset(); 
-        elevatorEncoder.setIntegratedSensorPosition(0, 0); 
+    public void setNothing() {
+        hangMode = hangStates.NOTHING; 
     }
 
     /////////////////////////////////////////////
@@ -170,120 +78,167 @@ public class Hang {
     //                                         //
     /////////////////////////////////////////////
 
-    //  PIVOT METHODS  //
-    private void pivotOutwardLim(){        //  PIVOTS OUTWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(backLimitTouched()){     //IF BACK LIMIT IS TOUCHED (TRUE/FALSE & LESS/MORE MAY DIFFER ON NEW ROBOT)
-            pivotMotor.set(0);  //SET SPEED TO 0
-        }
-
-        else{     
-            if(outwardLimitReached()){      //ELSE IF LIMIT IS NOT TOUCHED PIVOT OUTWARD
-                pivotMotor.set(outwardPivotSpeed);
-            }
-
-            else{        
-                pivotMotor.set(0);      
-            }
-        }
-    }
-
-    private void pivotInwardLim(){     //  PIVOTS INWARD UNTIL IT REACHES THE MAX ENCODER COUNT OR TOUCHES THE LIMIT SWITCH  //
-        if(frontLimitTouched()){   //IF FRONT LIMIT IS TOUCHED
-            pivotMotor.set(0);     // SET SPEED TO 0 
-        }
-
-        else{       
-            if(!inwardLimitReached()){        //ELSE IF FRONT LIMIT IS NOT TOUCHED PIVOT INWARD  
-                pivotMotor.set(inwardPivotSpeed);
-            }
-
-            else{   
-                pivotMotor.set(0);
-            }
-        }
-    }
-
-    private void pivotOutward(){      //PIVOTS OUTWARD, UNLESS BACK LIMIT IS TOUCHED
-        pivotMotor.set(outwardPivotSpeed);
-    }
-
-    private void pivotInward(){       //PIVOTS INWARD, UNLESS FRONT LIMIT IS TOUCHED
-        pivotMotor.set(inwardPivotSpeed);
-    }
-
-    public void manualPivot(double pivotSpeed){         //PIVOTS TO A GIVEN SPEED, USE FOR TESTING
-        pivotMotor.set(pivotSpeed);
-    }
-
-    private void pivotStop(){       //STOPS HANG PIVOT
-        pivotMotor.set(0);
-    }
-
-    private void pivotTesting(){        //EMPTY CODE FOR TESTING
-    }
-
-    //  ELEVATOR METHODS  //
-    private void elevExtendLim(){
-        if(topLimitTouched()){
-            elevatorMotor.set(0);
-        }
-        else{
-            if(elevatorEncoder.getIntegratedSensorPosition() < closeTopLimit){              //and not close to limit
-                elevatorMotor.set(extendSpeed);                                                          //extend fast
-            }
-            else{                                                                           //if close to limit
-                elevatorMotor.set(slowExtendSpeed);                                                          //extend slow
-            }
-        }
-    }
-
-    private void elevRetractLim(){
-        if(bottomLimitTouched()){
-            elevatorMotor.set(0);
-            elevatorEncoder.setIntegratedSensorPosition(0, 0);
-        }
-        else{
-            if(elevatorEncoder.getIntegratedSensorPosition() > closeBotLimit){
-                elevatorMotor.set(retractSpeed);
-            }
-            else{
-                elevatorMotor.set(slowRetractSpeed);
-            }
-        }
-    }
-
-    private void elevExtend(){                                          //set speed to extend
-        elevatorMotor.set(extendSpeed);
-    }                
-    
-    private void elevRetract(){
-        elevatorMotor.set(retractSpeed);
-    }
-
-    private void extendSlow(){
-        elevatorMotor.set(slowExtendSpeed); 
-    }
-
-    private void retractSlow(){
-        elevatorMotor.set(slowRetractSpeed); 
-    }
-
-    public void manualElevator(double joystickY){       //PIVOTS TO A GIVEN SPEED, USE FOR TESTING
-        elevatorMotor.set(joystickY);
-    }
-
-    private void elevatorStop(){        //STOP ELEVATOR 
-        elevatorMotor.set(0);
-    }
-
-    private void elevatorTesting(){     //EMPTY FOR TESTING
-
-    }
-
     public void resetCounters(){
         setUpMidCount = 0;
         setUpHighCount = 0; 
     }    
+
+    private void testing(){
+
+    }
+
+    private void midHangGrab() {
+        switch(setUpMidCount) {
+            case 0: 
+            //pivot outward 
+            if ((pivot.backLimitTouched() || pivot.outwardEncReached())) {      //If the back limit of pivot is touched OR back enc. limit is reached, STOP
+                pivot.setStop();
+                setUpMidCount++; 
+            } else {                                                            //Else, pivot outward
+                pivot.setPivOutward(); 
+            }
+            break; 
+
+            case 1: 
+            //elevator extend 
+            if (elevator.topLimitTouched() || elevator.topEncoderLimitReached()) {      //If the top limit of elevator is touched || enc limit is reached, STOP
+                elevator.setElevatorStop();
+                setUpMidCount++; 
+            } else {
+                if (!elevator.topLimitTouched()) {                                      //else if top limit isn't touched but close to top, extend slowly 
+                    elevator.setElevatorExtendSlow();
+                } else {
+                    elevator.setElevatorExtend();                                         // else extend at normal speed 
+                }
+            }
+            break; 
+
+            case 2: 
+            // elevator retract 
+            if (elevator.bottomLimitTouched() || elevator.botEncoderLimitReached()) {   // if bottom limit is touched || bottom encoder limit is reached, 
+                elevator.setElevatorStop();   
+                setUpMidCount++;                                           // stop
+            } else {
+                if(!elevator.bottomLimitTouched()) {                                    // else if close to bottom limit 
+                    elevator.setElevatorRetractSlow();                                  // retract slowly 
+                } else {
+                    elevator.setElevatorRetract();                                      // else retract at normal speed 
+                }
+            }
+            break; 
+
+            case 3: 
+            //pivot to mid
+            if (!pivot.middleEncReached() ) {                                      // if middle encoder limit isn't reached 
+                pivot.setPivInward();                                              // pivot inward 
+            } else {
+                pivot.setStop();                                                   // else stop
+                setUpMidCount++; 
+            }
+            break; 
+
+            case 4: 
+            //elevator extend
+            if (!elevator.topLimitTouched()|| !elevator.topEncoderLimitReached()) {  // if neither top limit is reached 
+                elevator.setElevatorExtend();                                        // extend at normal speed 
+            }
+            else {
+
+                if(!elevator.topLimitTouched()){                                    // else if close to top limit 
+                    elevator.setElevatorExtendSlow();                               // extend slowly 
+                }
+
+                else{
+                    elevator.setElevatorStop();                                     // else stop 
+                }
+                
+            }
+            break; 
+        }
+    }
+
+    private void highHangGrab(){
+        switch(setUpHighCount){
+            case 0: 
+            // extend elevator (some)
+            if (!elevator.topLimitTouched() && !elevator.topEncoderLimitReached()) {    // if top limit or small encoder limit isn't reached
+                elevator.setElevatorExtend();                                           // extend at a normal speed 
+            } else {
+                elevator.setElevatorStop();                                             // else stop
+                setUpHighCount++; 
+            }
+            break; 
+
+            case 1: 
+            //pivot inwards 
+            if (!pivot.inwardEncReached() || !pivot.frontLimitTouched()){           // if neither inward limit is reached 
+                pivot.setPivInward();                                               // pivot inward 
+            }
+
+            else{
+                pivot.setStop();                                                    // else stop 
+                setUpHighCount++;
+            }
+            break; 
+
+            case 2: 
+            //elevator extend 
+            if (!elevator.topLimitTouched() || !elevator.topEncoderLimitReached()) {   // if neither top limit is reached 
+                elevator.setElevatorExtend();                                          // extend at normal speed 
+            } 
+            
+            else {
+                if(!elevator.topLimitTouched()){                                      // else if close to top limit 
+                    elevator.setElevatorExtendSlow();                                 // extend slowly 
+                }
+
+                else{
+                    elevator.setElevatorStop();                                       //else stop
+                    setUpHighCount++;
+                }
+                
+            }
+            break; 
+
+            case 3: 
+            //pivot outwards
+            if (!pivot.backLimitTouched() && pivot.isGrabbingHigh()) {       // if back limit isn't touched or encoder limit for grabbing high rung isnt reached 
+                pivot.setPivOutward();                                       // pivot outward 
+            } 
+            else {
+                pivot.setStop();                                            // else stop 
+                setUpHighCount++; 
+            }
+            break; 
+
+            case 4: 
+            //elevator retract 
+            if (!elevator.bottomLimitTouched() && !elevator.botEncoderLimitReached()) {   // if neither bottom limit is reached 
+                elevator.setElevatorRetract();                                            // retract at normal speed 
+            }  
+            else {
+                if(!elevator.bottomLimitTouched()) {                                    // else if close to bottom limit 
+                    elevator.setElevatorRetractSlow();                                  // retract slowly 
+                } else {
+                    elevator.setElevatorRetract();                                      // else retract at normal speed 
+                }                                           
+            }
+            break; 
+        }
+    }
+
+    public void manualPivot(double pivSpeed){
+        pivot.manualPivot(pivSpeed);
+    }
+
+    public void manualElevator(double elevSpeed){
+        elevator.manualElev(elevSpeed);
+    }
+
+    private void stop(){
+        elevator.setElevatorStop();
+        pivot.setStop();
+    }
 
     /////////////////////////////////////////////
     //                                         //
@@ -294,56 +249,36 @@ public class Hang {
     
     public void run(){
         //SMART DASHBOARD DISPLAYS
-        SmartDashboard.putNumber("PIVOT ENCODER", pivotEncoder.get());
-        SmartDashboard.putString("PIVOT STATE", pivotMode.toString());
-        SmartDashboard.putNumber("PIVOT SPEED", pivotMotor.get());
-        SmartDashboard.putBoolean("BACK LIMIT", backLimit.get());
-        SmartDashboard.putBoolean("FRONT LIMIT", frontLimit.get());
-        SmartDashboard.putNumber("NAVX PITCH", navX.getPitch());
-
-        SmartDashboard.putNumber("ELEVATOR ENCODER", elevatorEncoder.getIntegratedSensorPosition());
-        SmartDashboard.putNumber("ELEVATOR SPEED", elevatorMotor.get());
-        SmartDashboard.putString("ELEVATOR STATE", elevatorMode.toString());
-        SmartDashboard.putBoolean("BOTTOM LIMIT", botLimit.get());
-        SmartDashboard.putBoolean("TOP LIMIT", topLimit.get());
-
         SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
-        SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount); 
-        
-        switch(pivotMode){
-            case PIVINWARD:
-            pivotInwardLim();
-            break; 
+        SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount);
 
-            case PIVOUTWARD:
-            pivotOutwardLim();
-            break; 
+        switch(hangMode){
+            case MIDHANG:
+            midHangGrab();
+            break;
 
-            case TESTING:
-            pivotTesting();
-            break; 
+            case HIGHHANG:
+            highHangGrab();
+            break;
 
-            case STOP:
-            pivotStop();
-            break; 
-        }
+            case PIVOTMANUAL:
+            break;
 
-        switch(elevatorMode){
-            case EXTEND:
-            elevExtend(); 
-            break; 
-
-            case RETRACT:
-            elevRetract();
-            break; 
+            case ELEVATORMANUAL:
+            break;
 
             case TESTING:
-            elevatorTesting();
-            break; 
+            testing();
+            break;
 
-            case STOP:
-            elevatorStop();
-            break; 
+            case NOTHING:
+            stop();
+            break;
+
         }
+
+        pivot.run(); 
+        elevator.run();
+
     }
 }

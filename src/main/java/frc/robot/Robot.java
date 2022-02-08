@@ -32,11 +32,13 @@ public class Robot extends TimedRobot {
   private DigitalInput hangBotLimit;
   private DigitalInput hangFrontLimit;
   private DigitalInput hangBackLimit;
-  private DigitalInput testLimit;
   private AHRS navX;
 
   private Joystick joystick;
+  private HangElevator elevator;
+  private HangPivot pivot;
   private Hang hangClass;
+  
 
   
   @Override
@@ -55,13 +57,13 @@ public class Robot extends TimedRobot {
     hangBotLimit = new DigitalInput(1);
     hangFrontLimit = new DigitalInput(2);
     hangBackLimit = new DigitalInput(3);
-    testLimit = new DigitalInput(5);
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
 
-    hangClass = new Hang(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder, hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit);
-
+    pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
+    elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
+    hangClass = new Hang(pivot, elevator);
 
   }
 
@@ -99,41 +101,41 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putBoolean("Test Limit:", testLimit.get());
-
-    if(joystick.getRawButton(7)){
-      hangClass.setElevatorRetract();
+    
+    if(joystick.getRawButton(3))
+    {
+      hangClass.setMidHang();
     }
 
-    else if(joystick.getRawButton(8)){
-      hangClass.setElevatorExtend();
-    }
+    else if(joystick.getRawButton(4))
+    {
+      hangClass.setHighHang();
+    } 
 
-    else if (joystick.getRawButton(3)) {
-      hangClass.setElevatorTesting();
-      hangClass.manualElevator(joystick.getY());
-    }
-
-    else{
-      hangClass.setElevatorStop();
-    }
-
-    if (joystick.getRawButton(9)) {
-      hangClass.setPivotInward();
-    }
-
-    else if (joystick.getRawButton(10)){
-      hangClass.setPivotOutward();
-    }
-
-    else if (joystick.getRawButton(4)) {
-      hangClass.setPivotTesting();
+    else if(joystick.getRawButton(5))
+    {
+      hangClass.setPivotManual();
       hangClass.manualPivot(joystick.getY());
     }
 
-    else{
-      hangClass.setPivotStop();
+    else if(joystick.getRawButton(6))
+    {
+      hangClass.setElevatorManual();
+      hangClass.manualElevator(joystick.getY());
     }
+
+    else if(joystick.getRawButton(7))
+    {
+      hangClass.setTesting();
+    }
+
+    else 
+    {
+      hangClass.setNothing();
+    }
+
+    hangClass.run();
+    
   }
 
   /** This function is called once when the robot is disabled. */
@@ -143,8 +145,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    hangClass.setPivotStop();
-    hangClass.setElevatorStop();
+    hangClass.setNothing();
     hangClass.resetCounters();
   }
 
