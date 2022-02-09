@@ -5,6 +5,9 @@
 package frc.robot;
 //IMPORTS
 import edu.wpi.first.wpilibj.TimedRobot;
+
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
+
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -109,43 +112,82 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    
-    if(joystick.getRawButton(3))
-    {
-      hangClass.setMidHang();
-    }
+    /*
+      if(joystick.getRawButton(3))
+      {
+        hangClass.setMidHang();
+      }
 
-    else if(joystick.getRawButton(4))
-    {
-      hangClass.setHighHang();
-    } 
-
-    else if(joystick.getRawButton(5))
-    {
-      hangClass.setPivotManual();
-      hangClass.manualPivot(joystick.getY());
-    }
-
-    else if(joystick.getRawButton(6))
-    {
-      hangClass.setElevatorManual();
-      hangClass.manualElevator(joystick.getY());
-    }
-
-    else if(joystick.getRawButton(7))
-    {
-      hangClass.setTesting();
-    }
-
-    else if (joystick.getRawButton(8)){
-      pivot.resetEnc();
-      elevator.encoderReset();
-    }
-
-    else 
-    {
+      else if(joystick.getRawButton(4))
+      {
+        hangClass.setHighHang();
+      } 
+      else if(joystick.getRawButton(5))
+      {
+        hangClass.setElevatorManual();
+        hangClass.manualElevatorButton(joystick.getRawButton(9), joystick.getRawButton(10));
+      }
+      else if(joystick.getRawButton(6))
+      {
+        hangClass.setElevatorManual();
+        hangClass.manualElevator(joystick.getY());
+      }
+      else if(joystick.getRawButton(7))
+      {
+        hangClass.setTesting();
+      }
+      else if (joystick.getRawButton(8)){
+        pivot.resetEnc();
+        elevator.encoderReset();
+      }
+      
+    else{
       hangClass.setNothing();
     }
+    */
+    SmartDashboard.putNumber("AXIS NUMBER", joystick.getRawAxis(3)); 
+
+    if (joystick.getRawAxis(3) == -1) {
+
+      if (joystick.getRawButton(3)) {
+        hangClass.setMidHang();
+      } 
+      else if (joystick.getRawButton(4)) {
+        hangClass.setHighHang();
+      } 
+      else if (joystick.getRawButton(8)) {
+        pivot.resetEnc();
+        elevator.encoderReset();
+      } 
+      else {
+        hangClass.setNothing(); 
+      }
+      hangClass.run(); 
+      
+      }
+      
+      else if (joystick.getRawAxis(3) == 1) {
+
+        if (joystick.getRawButton(3)) {
+          hangClass.setElevatorManual();
+          hangClass.manualElevatorButton(joystick.getRawButton(9), joystick.getRawButton(10));
+        } 
+        else if (joystick.getRawButton(4)) {
+          hangClass.setPivotManual();
+          hangClass.manualPivotButton(joystick.getRawButton(9), joystick.getRawButton(10));
+        } 
+        else if (joystick.getRawButton(8)) {
+          pivot.resetEnc();
+          elevator.encoderReset();
+        } 
+        else {
+          hangClass.setNothing();
+        }
+
+        hangClass.run(); 
+      } else {
+        hangClass.setNothing(); 
+      }
 
     hangClass.run();
     

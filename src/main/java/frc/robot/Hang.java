@@ -244,9 +244,33 @@ public class Hang {
         pivot.manualPivot(pivSpeed);
     }
 
+    public void manualPivotButton(boolean buttonIn, boolean buttonOut){
+        pivot.setTesting();
+        if(buttonIn){
+            pivot.pivotInward();
+        }
+        else if(buttonOut){
+            pivot.pivotOutward();
+        }
+        else{
+            pivot.setStop();
+        }
+    }
+
     public void manualElevator(double elevSpeed){
         elevator.setElevatorTest();
         elevator.manualElev(elevSpeed);
+    }
+
+    public void manualElevatorButton(boolean buttonExtend, boolean buttonRetract) {
+        elevator.setElevatorTest();
+        if (buttonExtend) {
+            elevator.setElevatorExtend();
+        } else if (buttonRetract) {
+            elevator.setElevatorRetract();
+        } else {
+            elevator.setElevatorStop();
+        }
     }
 
     private void stop(){
@@ -267,7 +291,7 @@ public class Hang {
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount);
         SmartDashboard.putString("HANG STATE", hangMode.toString());
         SmartDashboard.putNumber("TIMER", timer.get()); 
-
+        
         switch(hangMode){
             case MIDHANG:
             midHangGrab();
