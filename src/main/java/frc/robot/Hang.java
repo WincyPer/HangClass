@@ -22,8 +22,10 @@ public class Hang {
     private HangPivot pivot;
 
     //COUNTERS AND OTHER VARIABLES
-    public int setUpMidCount = 0;
-    private int setUpHighCount = 0; 
+    private int setUpMidCount = 0;
+    private int setUpHighCount = 0;
+    private int setUpHighGrabCount = 0;
+
 
     private Timer timer;
 
@@ -85,6 +87,7 @@ public class Hang {
     public void resetCounters(){
         setUpMidCount = 0;
         setUpHighCount = 0; 
+        setUpHighGrabCount = 0;
     }    
 
     private void testing(){}
@@ -107,7 +110,7 @@ public class Hang {
                 elevator.setElevatorStop();
                 setUpMidCount++; 
             } else {
-                if (!elevator.topEncoderLimitReached()) {                                      //else if top limit isn't touched but close to top, extend slowly 
+                if (!elevator.topEncoderLimitReached()) {                                      //else if top encoder isnt reached, extend at normal rate
                     elevator.setElevatorExtend();
                 } else {
                     elevator.setElevatorExtendSlow();                                         // else extend at normal speed 
@@ -117,7 +120,7 @@ public class Hang {
 
             case 2: 
             timer.start(); 
-            if (timer.get() >= 5) {
+            if (timer.get() >= 5) {     //WHEN TIMER > 5, STOP AND MOVE ON
                 timer.stop(); 
                 setUpMidCount++; 
             }
@@ -141,39 +144,26 @@ public class Hang {
 
             case 4: 
             // pivot to mid
-            if(pivot.middleEncReached()){
-                pivot.setStop();
+            if(pivot.middleEncReached()){       //if middle encounter count is reached, stop
+                pivot.setStop();       
                 setUpMidCount++;
             }
             else{
-                pivot.setPivInward();
+                pivot.setPivInward();       //else pivot inward
             }
             
             break; 
 
-            case 5:
-            if (elevator.topLimitTouched()) {      //If the top limit of elevator is touched || enc limit is reached, STOP
-                elevator.setElevatorStop();
-                setUpMidCount++; 
-            } else {
-                if (!elevator.topEncoderLimitReached()) {                                      //else if top limit isn't touched but close to top, extend slowly 
-                    elevator.setElevatorExtend();
-                } else {
-                    elevator.setElevatorExtendSlow();                                         // else extend at normal speed 
-                }
-            }
-            break; 
-
-            case 6: 
+            case 5: 
             timer.reset(); 
             break; 
         }
     }
 
-    private void highHangGrab(){
-        switch(setUpHighCount){
+    private void highHangSetup(){
+        switch(setUpHighGrabCount){
             case 0: 
-            // extend elevator (some)
+            // extend elevator (to a certain encoder extent)
             if (elevator.topEncoderLimitReached()) {    // if top limit or small encoder limit isn't reached
                 elevator.setElevatorStop(); 
                 setUpHighCount++;                                            // extend at a normal speed 
@@ -210,47 +200,62 @@ public class Hang {
             }
             break; 
         }
-/*
-            case 3: 
-            //pivot outwards
-            if (!pivot.backLimitTouched() && pivot.isGrabbingHigh()) {       // if back limit isn't touched or encoder limit for grabbing high rung isnt reached 
-                pivot.setPivOutward();                                       // pivot outward 
-            } 
-            else {
-                pivot.setStop();                                            // else stop 
-                setUpHighCount++; 
-            }
-            break; 
+            
+    }
 
-            case 4: 
-            //elevator retract 
-            if (!elevator.bottomLimitTouched() && !elevator.botEncoderLimitReached()) {   // if neither bottom limit is reached 
-                elevator.setElevatorRetract();                                            // retract at normal speed 
-            }  
-            else {
-                if(!elevator.bottomLimitTouched()) {                                    // else if close to bottom limit 
-                    elevator.setElevatorRetractSlow();                                  // retract slowly 
-                } else {
-                    elevator.setElevatorRetract();                                      // else retract at normal speed 
-                }                                           
+    private void highHangGrab(){
+        switch(setUpHighGrabCount){
+            case 0:
+            if(!elevator.botEncoderLimitReached()){
+                elevator.setElevatorRetract();
             }
-            break; 
-            */
-        }   
+
+            else{
+                elevator.setElevatorRetractSlow();
+                setUpHighGrabCount++;
+            }
+
+            case 1:
+            //if(pivot.backLimitTouched()){
+            if(!elevator.pivotableEncoderReached()){
+                pivot.setStop();
+                elevator.setElevatorRetractSlow();
+                setUpHighGrabCount++;
+            }
+            else{
+                if(pivot.outwardEncReached(){
+                pivot.setStop();
+                }
+                else{
+                    pivot.setPivOutward();
+                }
+                if(elevator.botEncoderLimitReached()){
+                    elevator.setElevatorRetractSlow();
+                }
+                else{
+                    elevator.setElevatorRetract();
+                }
+            }
+            
+            
+
+        }
+    }
     
 
     public void manualPivot(double pivSpeed){
-        pivot.setTesting();
+        pivot.setTesting();     //SETS PIVOT STATE TO TESTING
         pivot.manualPivot(pivSpeed);
     }
 
     public void manualPivotButton(boolean buttonIn, boolean buttonOut){
-        pivot.setTesting();
+        pivot.setTesting();     //SETS PIVOT STATE TO TESTING
+
         if(buttonIn){
-            pivot.pivotInward();
+            pivot.pivotInward();        //PIVOT INWARD WHEN GIVEN BUTTON IS PRESSED
         }
         else if(buttonOut){
-            pivot.pivotOutward();
+            pivot.pivotOutward();       //PIVOT OUTWARD WHEN GIVEN BUTTON IS PRESSED
         }
         else{
             pivot.setStop();
@@ -258,22 +263,23 @@ public class Hang {
     }
 
     public void manualElevator(double elevSpeed){
-        elevator.setElevatorTest();
+        elevator.setElevatorTest();     //SETS PIVOT STATE TO TESTING
         elevator.manualElev(elevSpeed);
     }
 
     public void manualElevatorButton(boolean buttonExtend, boolean buttonRetract) {
-        elevator.setElevatorTest();
-        if (buttonExtend) {
-            elevator.setElevatorExtend();
+        elevator.setElevatorTest();     //SETS ELEVATOR STATE TO TESTING
+       
+        if (buttonExtend) {     
+            elevator.setElevatorExtend();       //EXTENDS WHEN GIVEN BUTTON IS PRESSED
         } else if (buttonRetract) {
-            elevator.setElevatorRetract();
+            elevator.setElevatorRetract();      //RETRACTS WHEN GIVEN BUTTON IS PRESSED
         } else {
-            elevator.setElevatorStop();
+            elevator.setElevatorStop();     
         }
     }
 
-    private void stop(){
+    private void stop(){        //STOPS ELEVATOR AND PIVOT
         elevator.setElevatorStop();
         pivot.setStop();
     }
@@ -291,14 +297,14 @@ public class Hang {
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount);
         SmartDashboard.putString("HANG STATE", hangMode.toString());
         SmartDashboard.putNumber("TIMER", timer.get()); 
-        
+
         switch(hangMode){
             case MIDHANG:
             midHangGrab();
             break;
 
             case HIGHHANG:
-            highHangGrab();
+            highHangSetup();
             break;
 
             case PIVOTMANUAL:
