@@ -174,45 +174,43 @@ public class Hang {
         switch(setUpHighCount){
             case 0: 
             // extend elevator (some)
-            if (!elevator.topLimitTouched() && !elevator.topEncoderLimitReached()) {    // if top limit or small encoder limit isn't reached
-                elevator.setElevatorExtend();                                           // extend at a normal speed 
+            if (elevator.topEncoderLimitReached()) {    // if top limit or small encoder limit isn't reached
+                elevator.setElevatorStop(); 
+                setUpHighCount++;                                            // extend at a normal speed 
             } else {
-                elevator.setElevatorStop();                                             // else stop
-                setUpHighCount++; 
+                elevator.setElevatorExtend();                                             // else stop
             }
             break; 
 
             case 1: 
             //pivot inwards 
-            if (!pivot.inwardEncReached() || !pivot.frontLimitTouched()){           // if neither inward limit is reached 
-                pivot.setPivInward();                                               // pivot inward 
+            if (pivot.inwardEncReached() || pivot.frontLimitTouched()){           // if neither inward limit is reached 
+                pivot.setStop();
+                setUpHighCount++;                                                // pivot inward 
             }
-
             else{
-                pivot.setStop();                                                    // else stop 
-                setUpHighCount++;
+                pivot.setPivInward();                                                    // else stop 
             }
             break; 
 
             case 2: 
             //elevator extend 
-            if (!elevator.topLimitTouched() || !elevator.topEncoderLimitReached()) {   // if neither top limit is reached 
-                elevator.setElevatorExtend();                                          // extend at normal speed 
+            if (elevator.topLimitTouched()) {                                    // if neither top limit is reached 
+                elevator.setElevatorStop();                                          // extend at normal speed 
             } 
-            
             else {
-                if(!elevator.topLimitTouched()){                                      // else if close to top limit 
+                if(!elevator.topEncoderLimitReached()){                                      // else if close to top limit 
                     elevator.setElevatorExtendSlow();                                 // extend slowly 
                 }
-
                 else{
-                    elevator.setElevatorStop();                                       //else stop
+                    elevator.setElevatorExtend();                                       //else stop
                     setUpHighCount++;
                 }
                 
             }
             break; 
-
+        }
+/*
             case 3: 
             //pivot outwards
             if (!pivot.backLimitTouched() && pivot.isGrabbingHigh()) {       // if back limit isn't touched or encoder limit for grabbing high rung isnt reached 
@@ -237,8 +235,9 @@ public class Hang {
                 }                                           
             }
             break; 
-        }
-    }
+            */
+        }   
+    
 
     public void manualPivot(double pivSpeed){
         pivot.setTesting();

@@ -103,7 +103,7 @@ public class HangPivot {
     }
 
     public boolean inwardEncReached(){       //RETURNS TRUE IF POSITION IS LESS THAN PIVOT
-        return Math.abs(pivotEncoder.getPosition()) < inwardPivotPos;
+        return Math.abs(pivotEncoder.getPosition()) > inwardPivotPos;
     }
 
     public boolean isGrabbingHigh(){      //CHECKS IF PIVOT ENCODER REACHED HIGH BAR
