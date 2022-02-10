@@ -34,8 +34,8 @@ public class HangPivot {
     private final double inwardPivotPos = 60.0;      
     private final double outwardPivotPos = 100.0;
     private final double midPivotPos = 80.0; 
-    private final double inwardPivotSpeed = 0.25;
-    private final double outwardPivotSpeed = -0.25;
+    private final double inwardPivotSpeed = 0.40;
+    private final double outwardPivotSpeed = -0.40;
     private final double grabbingHighPivotPos = 1400.0; 
 
     

@@ -221,6 +221,7 @@ public class Hang {
             }
             break; 
         }
+
             
     }
 
@@ -257,11 +258,25 @@ public class Hang {
                 }
                 else{
                 elevator.setElevatorRetractSlow();
+                }
             }
-        } 
+            break;
+/*
+            case 1:
+            if(!pivot.middleEncReached()){
+                pivot.setPivInward();
+            }
 
-        
+            else{
+                pivot.setStop();
+                setUpHighGrabCount++;
+            }
+            break;
+        */
         }
+
+
+
     }
     
 
