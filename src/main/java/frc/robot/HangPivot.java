@@ -31,9 +31,9 @@ public class HangPivot {
     private AHRS navX;
 
     //  VARIABLES [SUBJECT TO CHANGE]  //
-    private final double inwardPivotPos = 150.0;      
-    private final double outwardPivotPos = 200.0;
-    private final double midPivotPos = 175.0; 
+    private final double inwardPivotPos = 60.0;      
+    private final double outwardPivotPos = 100.0;
+    private final double midPivotPos = 80.0; 
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
     private final double grabbingHighPivotPos = 1400.0; 

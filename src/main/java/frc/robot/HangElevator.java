@@ -23,7 +23,7 @@ public class HangElevator{
     //VALUES
     private double closeTopLimit = 0.50* 2094;                  //close to top limit switch enc. value         
     private double closeBotLimit = 600;                         //close to bottom limit switch enc. value
-    private double pivotableEnc = 800;                           //encoder that needs to be reached for the pivot to come off previous rung
+    private double pivotableEnc = 1200;                           //encoder that needs to be reached for the pivot to come off previous rung
     private double extendSpeed = 0.40;                          //counter-clockwise to extend (-speed)
     private double slowExtendSpeed = 0.3;
     private double retractSpeed = -0.40;                         //clockwise to retract (+speed)

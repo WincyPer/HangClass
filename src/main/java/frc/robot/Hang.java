@@ -238,7 +238,7 @@ public class Hang {
             }*/
             
             case 0:
-            if(elevator.topEncoderLimitReached()){
+            if(elevator.pivotableEncoderReached()){
                 pivot.setStop();
                 elevator.setElevatorRetractSlow();
             }
@@ -256,7 +256,7 @@ public class Hang {
                 elevator.setElevatorStop();
                 }
                 else{
-                elevator.setElevatorRetract();
+                elevator.setElevatorRetractSlow();
             }
         } 
 
