@@ -49,7 +49,7 @@ public class Hang {
 
     //PIVOT ENUMERATIONS
     private enum hangStates{
-        MIDHANG, HIGHHANG, PIVOTMANUAL, ELEVATORMANUAL, TESTING, NOTHING
+        MIDHANG, HIGHHANG, HIGHHANGGRAB, PIVOTMANUAL, ELEVATORMANUAL, TESTING, NOTHING
     }
     
     private hangStates hangMode = hangStates.NOTHING; 
@@ -60,6 +60,10 @@ public class Hang {
 
     public void setHighHang() {
         hangMode = hangStates.HIGHHANG; 
+    }
+
+    public void setHighHangGrab(){
+        hangMode = hangStates.HIGHHANGGRAB;
     }
 
     public void setPivotManual() {
@@ -235,9 +239,7 @@ public class Hang {
                 else{
                     elevator.setElevatorRetract();
                 }
-            }
-            
-            
+            } 
 
         }
     }
@@ -306,6 +308,9 @@ public class Hang {
             case HIGHHANG:
             highHangSetup();
             break;
+
+            case HIGHHANGGRAB:
+            highHangGrab();
 
             case PIVOTMANUAL:
             break;
