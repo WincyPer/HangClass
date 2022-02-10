@@ -102,6 +102,7 @@ public class Hang {
             case 0:
             //resets encoder
             pivot.resetEnc();
+            elevator.encoderReset();
             setUpMidCount++;
             break;
 
@@ -183,7 +184,7 @@ public class Hang {
     }
 
     private void highHangSetup(){
-        switch(setUpHighGrabCount){
+        switch(setUpHighCount){
             case 0: 
             // extend elevator (to a certain encoder extent)
             if (elevator.topEncoderLimitReached()) {    // if top limit or small encoder limit isn't reached
@@ -216,9 +217,7 @@ public class Hang {
                 }
                 else{
                     elevator.setElevatorExtend();                                       //else stop
-                    setUpHighCount++;
                 }
-                
             }
             break; 
         }
@@ -227,7 +226,8 @@ public class Hang {
 
     private void highHangGrab(){
         switch(setUpHighGrabCount){
-            case 0:
+    /*        case 0:
+            //retract elevator
             if(!elevator.botEncoderLimitReached()){
                 elevator.setElevatorRetract();
             }
@@ -235,34 +235,32 @@ public class Hang {
             else{
                 elevator.setElevatorRetractSlow();
                 setUpHighGrabCount++;
-            }
-            /*
-            case 1:
-            if(!elevator.pivotableEncoderReached()){
+            }*/
+            
+            case 0:
+            if(elevator.topEncoderLimitReached()){
                 pivot.setStop();
                 elevator.setElevatorRetractSlow();
             }
 
             else{
-            if(pivot.outwardEncReached()){
+                if(pivot.outwardEncReached()){
                 pivot.setStop();
                 setUpHighGrabCount++;
-            }
-            else{
+                }
+                else{
                 pivot.setPivOutward();
-            }
+                }
 
-            if(elevator.botEncoderLimitReached()){
+                if(elevator.bottomLimitTouched()){
                 elevator.setElevatorStop();
-            }
-            else{
-                elevator.setElevatorRetractSlow();
+                }
+                else{
+                elevator.setElevatorRetract();
             }
         } 
 
-            case 2:
-
-        */
+        
         }
     }
     
