@@ -49,8 +49,6 @@ public class Robot extends TimedRobot {
   private HangPivot pivot;
   private Hang hangClass;
   
-
-  
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -112,39 +110,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    /*
-      if(joystick.getRawButton(3))
-      {
-        hangClass.setMidHang();
-      }
-
-      else if(joystick.getRawButton(4))
-      {
-        hangClass.setHighHang();
-      } 
-      else if(joystick.getRawButton(5))
-      {
-        hangClass.setElevatorManual();
-        hangClass.manualElevatorButton(joystick.getRawButton(9), joystick.getRawButton(10));
-      }
-      else if(joystick.getRawButton(6))
-      {
-        hangClass.setElevatorManual();
-        hangClass.manualElevator(joystick.getY());
-      }
-      else if(joystick.getRawButton(7))
-      {
-        hangClass.setTesting();
-      }
-      else if (joystick.getRawButton(8)){
-        pivot.resetEnc();
-        elevator.encoderReset();
-      }
-      
-    else{
-      hangClass.setNothing();
-    }
-    */
+   
     SmartDashboard.putNumber("AXIS NUMBER", joystick.getRawAxis(3)); 
 
     if (joystick.getRawAxis(3) == -1) {
@@ -159,7 +125,7 @@ public class Robot extends TimedRobot {
       else if(joystick.getRawButton(5)){
         hangClass.setHighHangGrab();
       }
-      
+
       else if (joystick.getRawButton(8)) {
         pivot.resetEnc();
         elevator.encoderReset();

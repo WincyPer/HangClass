@@ -220,26 +220,30 @@ public class Hang {
             }
 
             case 1:
-            //if(pivot.backLimitTouched()){
             if(!elevator.pivotableEncoderReached()){
                 pivot.setStop();
                 elevator.setElevatorRetractSlow();
+            }
+
+            else{
+            if(pivot.outwardEncReached()){
+                pivot.setStop();
                 setUpHighGrabCount++;
             }
             else{
-                if(pivot.outwardEncReached()){
-                pivot.setStop();
-                }
-                else{
-                    pivot.setPivOutward();
-                }
-                if(elevator.botEncoderLimitReached()){
-                    elevator.setElevatorRetractSlow();
-                }
-                else{
-                    elevator.setElevatorRetract();
-                }
-            } 
+                pivot.setPivOutward();
+            }
+
+            if(elevator.botEncoderLimitReached()){
+                elevator.setElevatorStop();
+            }
+            else{
+                elevator.setElevatorRetractSlow();
+            }
+        } 
+
+            case 2:
+
 
         }
     }
@@ -313,9 +317,11 @@ public class Hang {
             highHangGrab();
 
             case PIVOTMANUAL:
+            testing();
             break;
 
             case ELEVATORMANUAL:
+            testing();
             break;
 
             case TESTING:
