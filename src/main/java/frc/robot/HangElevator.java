@@ -27,6 +27,7 @@ public class HangElevator{
     private double slowExtendSpeed = 0.3;
     private double retractSpeed = -0.40;                         //clockwise to retract (+speed)
     private double slowRetractSpeed = -0.3;
+    private double pivotableEnc = 0;                           //encoder that needs to be reached for the pivot to come off previous rung
 
     //CONSTRUCTOR
     public HangElevator(MotorController elevMotor, DigitalInput limitSwitchTop, DigitalInput limitSwitchBottom, TalonEncoder elevEncoder){
@@ -83,6 +84,9 @@ public class HangElevator{
         return elevatorEncoder.get() < closeBotLimit;
     }
 
+    public boolean pivotableEncoderReached(){                                               //return true if retracted enough for pivot to come off
+        return elevatorEncoder.get() > pivotableEnc;
+    }
 
     //STOP
     public void stop(){                                                                     //stop elevator motor

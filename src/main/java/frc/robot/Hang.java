@@ -223,7 +223,7 @@ public class Hang {
                 setUpHighGrabCount++;
             }
             else{
-                if(pivot.outwardEncReached(){
+                if(pivot.outwardEncReached()){
                 pivot.setStop();
                 }
                 else{

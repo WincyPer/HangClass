@@ -162,7 +162,6 @@ public class Robot extends TimedRobot {
       else {
         hangClass.setNothing(); 
       }
-      hangClass.run(); 
       
       }
       
@@ -170,11 +169,11 @@ public class Robot extends TimedRobot {
 
         if (joystick.getRawButton(3)) {
           hangClass.setElevatorManual();
-          hangClass.manualElevatorButton(joystick.getRawButton(9), joystick.getRawButton(10));
+          hangClass.manualElevator(joystick.getY());
         } 
         else if (joystick.getRawButton(4)) {
           hangClass.setPivotManual();
-          hangClass.manualPivotButton(joystick.getRawButton(9), joystick.getRawButton(10));
+          hangClass.manualPivot(joystick.getY());
         } 
         else if (joystick.getRawButton(8)) {
           pivot.resetEnc();
@@ -184,13 +183,11 @@ public class Robot extends TimedRobot {
           hangClass.setNothing();
         }
 
-        hangClass.run(); 
       } else {
         hangClass.setNothing(); 
       }
 
     hangClass.run();
-    
   }
 
   /** This function is called once when the robot is disabled. */
