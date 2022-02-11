@@ -166,18 +166,18 @@ public class Hang {
             }
             break; 
 
-/*          QUESTIONABLE IF THE DRIVERS WANT IT, BUT WE HAVE TO TALK WITH THEM :)
+            //QUESTIONABLE IF THE DRIVERS WANT IT, BUT WE HAVE TO TALK WITH THEM :)
             case 6:
             // elevator extends (to secure pivot hook)
-            if(!elevator.botEncoderLimitReached()){
+            if(!elevator.topEncoderLimitReached()){   //bottom/top encoder ??
                 elevator.setElevatorStop();
                 setUpMidCount++;
             }
             else{
                 elevator.setElevatorExtendSlow();
             }
-*/
-            case 6: 
+
+            case 7: 
             timer.reset();  //resets timer
             break; 
         }
@@ -210,6 +210,7 @@ public class Hang {
             //elevator extend 
             if (elevator.topLimitTouched()) {                                    // if neither top limit is reached 
                 elevator.setElevatorStop();                                          // extend at normal speed 
+                setUpHighCount++; 
             } 
             else {
                 if(!elevator.topEncoderLimitReached()){                                      // else if close to top limit 
@@ -220,59 +221,61 @@ public class Hang {
                 }
             }
             break; 
+            }
         }
 
-            
-    }
 
     private void highHangGrab(){
         switch(setUpHighGrabCount){
-    /*        case 0:
-            //retract elevator
-            if(!elevator.botEncoderLimitReached()){
-                elevator.setElevatorRetract();
-            }
-
-            else{
-                elevator.setElevatorRetractSlow();
-                setUpHighGrabCount++;
-            }*/
             
             case 0:
-            if(elevator.pivotableEncoderReached()){
+            //retract elevator until pivotable enc is reached 
+            if(elevator.pivotableEncoderReached()){  // if elevator enc is higher than pivotable enc stop pivot and retract slow
                 pivot.setStop();
                 elevator.setElevatorRetractSlow();
+                setUpHighGrabCount++; 
             }
+            break; 
 
-            else{
-                if(pivot.outwardEncReached()){
-                pivot.setStop();
-                setUpHighGrabCount++;
-                }
-                else{
-                pivot.setPivOutward();
-                }
-
-                if(elevator.bottomLimitTouched()){
+            case 1: 
+            // retract and pivot outward 
+            if(pivot.outwardEncReached() && elevator.bottomLimitTouched()){         //if outward enc is reached AND bottom limit is touched
+                pivot.setStop();                                                    //set pivot and elevator stop
                 elevator.setElevatorStop();
-                }
-                else{
-                elevator.setElevatorRetractSlow();
-                }
-            }
-            break;
-/*
-            case 1:
-            if(!pivot.middleEncReached()){
-                pivot.setPivInward();
-            }
-
-            else{
-                pivot.setStop();
                 setUpHighGrabCount++;
             }
+            else if(!pivot.outwardEncReached()){                                    //else if pivot outward enc isn't reached 
+                pivot.setPivOutward();                                              //pivot outward 
+            }
+            else if(!elevator.bottomLimitTouched()){                                 
+                if(!elevator.botEncoderLimitReached()){                             //else if bottom limit isn't touched and bottom enc limit isn't reached
+                    elevator.setElevatorRetract();                                  //retract elevator at normal speed
+                }
+                else{                                                               //else if bottom limit isn't touched and bottom enc limit is reached
+                    elevator.setElevatorRetractSlow();                              //retract slow
+                }
+            }
+            // end position should be: elevator on high rung, pivot fully outwards not on rung 
             break;
-        */
+
+            case 2: 
+            // pivot to mid 
+            if (pivot.middleEncReached()) {         //if middle enc is reached 
+                pivot.setStop();                    //stop pivot
+                setUpHighGrabCount++;
+            }
+            else {
+                pivot.setPivInward();               //else pivot inward 
+            }
+
+            case 3:
+            if(elevator.topEncoderLimitReached()){    //if top enc limit(small extend limit) is reached
+                elevator.setElevatorStop();           //stop elevator
+            }
+            else{
+                elevator.setElevatorExtendSlow();     //else extend elevator slow
+            }
+
         }
 
 

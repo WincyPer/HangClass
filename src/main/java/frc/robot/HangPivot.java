@@ -187,8 +187,9 @@ public class HangPivot {
 
         SmartDashboard.putNumber("MOTOR SPEED", hangPivot.get());
         SmartDashboard.putString("HANG PIVOT STATE", pivotState.toString());
-        SmartDashboard.putBoolean("BACK LIMIT", backSwitch.get());
-        SmartDashboard.putBoolean("FRONT LIMIT", frontSwitch.get());
+        SmartDashboard.putBoolean(" PIVOT BACK LIMIT", backSwitch.get());
+        SmartDashboard.putBoolean("PIVOT FRONT LIMIT", frontSwitch.get());
+        SmartDashboard.putBoolean("PIVOT MID LIMIT", middleEncReached()); 
         SmartDashboard.putNumber("PIVOT ENCODER", pivotEncoder.getPosition());
         SmartDashboard.putNumber("NAVX PITCH", navX.getPitch());
 
