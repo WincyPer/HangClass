@@ -12,6 +12,7 @@ public class HangElevator{
    
     //MOTORS
     private MotorController elevatorMotor;
+    //775 pro 
 
     //ENCODERS
     private TalonEncoder elevatorEncoder;

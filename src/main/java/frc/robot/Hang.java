@@ -118,14 +118,14 @@ public class Hang {
 
             case 2: 
             //elevator extend (all the way to the top)
-            if (elevator.topLimitTouched()) {      //if the top limit of elevator is touched || enc limit is reached, STOP
+            if (elevator.topLimitTouched()) {      //if the top limit of elevator is touched, STOP
                 elevator.setElevatorStop();
                 setUpMidCount++; 
             } else {
                 if (!elevator.topEncoderLimitReached()) {                                      //else if top encoder isnt reached, extend at normal rate
                     elevator.setElevatorExtend();
                 } else {
-                    elevator.setElevatorExtendSlow();                                         // else extend at normal speed 
+                    elevator.setElevatorExtendSlow();                                         // else extend slow
                 }
             }
             break; 
@@ -142,15 +142,15 @@ public class Hang {
             case 4: 
             // elevator retract (pulls all the way up)
             timer.reset(); 
-            if (elevator.bottomLimitTouched()) {   // if bottom limit is touched || bottom encoder limit is reached, 
+            if (elevator.bottomLimitTouched()) {   // if bottom limit is touched
                 elevator.setElevatorStop();   
                 setUpMidCount++;                                           // stop
             } 
             else {
                 if(!elevator.botEncoderLimitReached()) {                                    // else if close to bottom limit 
-                    elevator.setElevatorRetract();                                  // retract slowly 
+                    elevator.setElevatorRetract();                                  // retract at normal speed
                 } else {
-                    elevator.setElevatorRetractSlow();                                      // else retract at normal speed 
+                    elevator.setElevatorRetractSlow();                                      // else retract slowly 
                 }
             }
             break; 
@@ -169,13 +169,14 @@ public class Hang {
             //QUESTIONABLE IF THE DRIVERS WANT IT, BUT WE HAVE TO TALK WITH THEM :)
             case 6:
             // elevator extends (to secure pivot hook)
-            if(!elevator.topEncoderLimitReached()){   //bottom/top encoder ??
+            if(!elevator.botEncoderLimitReached()){             //if elevator reaches small enc limit, stop
                 elevator.setElevatorStop();
                 setUpMidCount++;
             }
             else{
-                elevator.setElevatorExtendSlow();
+                elevator.setElevatorExtendSlow();               // else extend slow
             }
+            break; 
 
             case 7: 
             timer.reset();  //resets timer
@@ -187,7 +188,7 @@ public class Hang {
         switch(setUpHighCount){
             case 0: 
             // extend elevator (to a certain encoder extent)
-            if (elevator.topEncoderLimitReached()) {    // if top limit or small encoder limit isn't reached
+            if (elevator.topEncoderLimitReached()) {  //VALUE SUBJECT TO CHANGE    // if top limit or small encoder limit isn't reached 
                 elevator.setElevatorStop(); 
                 setUpHighCount++;                                            // extend at a normal speed 
             } else {
