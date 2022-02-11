@@ -126,6 +126,10 @@ public class Robot extends TimedRobot {
         hangClass.setHighHangGrab();
       }
 
+      else if(joystick.getRawButton(6)){
+        hangClass.resetCounters();
+      }
+
       else if (joystick.getRawButton(8)) {
         pivot.resetEnc();
         elevator.encoderReset();

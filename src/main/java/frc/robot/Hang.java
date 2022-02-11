@@ -176,7 +176,7 @@ public class Hang {
             else{
                 elevator.setElevatorExtendSlow();               // else extend slow
             }
-            break; 
+            break;  
 
             case 7: 
             timer.reset();  //resets timer
@@ -243,6 +243,7 @@ public class Hang {
             if(pivot.outwardEncReached() && elevator.bottomLimitTouched()){         //if outward enc is reached AND bottom limit is touched
                 pivot.setStop();                                                    //set pivot and elevator stop
                 elevator.setElevatorStop();
+                elevator.encoderReset();
                 setUpHighGrabCount++;
             }
             else if(!pivot.outwardEncReached()){                                    //else if pivot outward enc isn't reached 
@@ -259,7 +260,19 @@ public class Hang {
             // end position should be: elevator on high rung, pivot fully outwards not on rung 
             break;
 
-            case 2: 
+            case 2:
+            timer.start();
+            setUpHighGrabCount++;
+            break;
+
+            case 3:
+            if(timer.get() > 3){
+                timer.stop();
+                setUpHighGrabCount++;
+            }
+            break;
+
+            case 4: 
             // pivot to mid 
             if (pivot.middleEncReached()) {         //if middle enc is reached 
                 pivot.setStop();                    //stop pivot
@@ -268,14 +281,20 @@ public class Hang {
             else {
                 pivot.setPivInward();               //else pivot inward 
             }
+            break;
 
-            case 3:
+            case 5:
             if(elevator.topEncoderLimitReached()){    //if top enc limit(small extend limit) is reached
                 elevator.setElevatorStop();           //stop elevator
+                setUpHighGrabCount++;
             }
             else{
                 elevator.setElevatorExtendSlow();     //else extend elevator slow
             }
+
+            case 6:
+            timer.reset();
+            break;
 
         }
 
@@ -336,6 +355,7 @@ public class Hang {
         //SMART DASHBOARD DISPLAYS
         SmartDashboard.putNumber("MID HANG COUNTER", setUpMidCount); 
         SmartDashboard.putNumber("HIGH HANG COUNTER", setUpHighCount);
+        SmartDashboard.putNumber("HIGH HANG GRAB COUNTER", setUpHighGrabCount);
         SmartDashboard.putString("HANG STATE", hangMode.toString());
         SmartDashboard.putNumber("TIMER", timer.get()); 
 
