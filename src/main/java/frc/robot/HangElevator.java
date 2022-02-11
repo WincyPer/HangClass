@@ -78,11 +78,11 @@ public class HangElevator{
         return !limitBot.get(); 
     }
     
-    public boolean topEncoderLimitReached(){                                                //return true if past top encoder check
+    public boolean aboveTopEncoderLimit(){                                                //return true if past top encoder check
         return elevatorEncoder.get() > closeTopLimit;
     }
     
-    public boolean botEncoderLimitReached(){                                                //return true if past bottom encoder check
+    public boolean belowBottomEncoderLimit(){                                                //return true if past bottom encoder check
         return elevatorEncoder.get() < closeBotLimit;
     }
 
@@ -131,7 +131,7 @@ public class HangElevator{
             elevatorMotor.set(0);                                                           //stop extending
         }
         else{
-            if(topEncoderLimitReached()){                                                   //not at top limit but close to
+            if(aboveTopEncoderLimit()){                                                   //not at top limit but close to
                 elevatorMotor.set(slowExtendSpeed);                                         //extend slow
             }
             else{
@@ -147,7 +147,7 @@ public class HangElevator{
             elevatorEncoder.reset();                              //reset encoder (bottom limit should be 0 position)
         }
         else{
-            if(botEncoderLimitReached()){                                                   //if not at bottom limit but close to
+            if(belowBottomEncoderLimit()){                                                   //if not at bottom limit but close to
                 elevatorMotor.set(slowRetractSpeed);
             }
             else{                                                                           //if not at or close to bottom limit
