@@ -217,7 +217,7 @@ public class Hang {
                 if(!elevator.aboveTopEncoderLimit()){                                      // else if close to top limit 
                     elevator.setElevatorExtendSlow();                                 // extend slowly 
                 }
-                else{
+                else{ 
                     elevator.setElevatorExtend();                                       //else stop
                 }
             }
