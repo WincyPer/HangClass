@@ -76,11 +76,11 @@ public class HangElevator{
         return !limitBot.get(); 
     }
     
-    public boolean aboveTopEncoderLimit(){                                                //return true if past top encoder check
+    public boolean aboveTopEncoderLimitReached(){                                                //return true if past top encoder check
         return elevatorEncoder.getIntegratedSensorPosition() > closeTopLimit;
     }
     
-    public boolean belowBottomEncoderLimit(){                                                //return true if past bottom encoder check
+    public boolean belowBottomEncoderLimitReached(){                                                //return true if past bottom encoder check
         return elevatorEncoder.getIntegratedSensorPosition() < closeBotLimit;
     }
 
@@ -129,7 +129,7 @@ public class HangElevator{
             elevatorMotor.set(0);                                                           //stop extending
         }
         else{
-            if(aboveTopEncoderLimit()){                                                   //not at top limit but close to
+            if(aboveTopEncoderLimitReached()){                                                   //not at top limit but close to
                 elevatorMotor.set(slowExtendSpeed);                                         //extend slow
             }
             else{
@@ -145,7 +145,7 @@ public class HangElevator{
             elevatorEncoder.setIntegratedSensorPosition(0, 0);                       //reset encoder (bottom limit should be 0 position)
         }
         else{
-            if(belowBottomEncoderLimit()){                                                   //if not at bottom limit but close to
+            if(belowBottomEncoderLimitReached()){                                                   //if not at bottom limit but close to
                 elevatorMotor.set(slowRetractSpeed);
             }
             else{                                                                           //if not at or close to bottom limit

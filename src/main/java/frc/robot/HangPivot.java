@@ -1,13 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-
-import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.Timer;
 
 public class HangPivot {
     
@@ -17,6 +13,7 @@ public class HangPivot {
     //                                         //
     /////////////////////////////////////////////
 
+    //775 MOTOR
     private MotorController hangPivot; 
     private TalonEncoder pivotEncoder;       
 
@@ -33,7 +30,7 @@ public class HangPivot {
     private final double midPivotPos = 175.0; 
     private final double inwardPivotSpeed = 0.25;
     private final double outwardPivotSpeed = -0.25;
-    private final double grabbingHighPivotPos = 1400.0; 
+    //private final double grabbingHighPivotPos = 1400.0; 
 
     
     /////////////////////////////////////////////
@@ -100,11 +97,11 @@ public class HangPivot {
     public boolean inwardEncReached(){       //RETURNS TRUE IF POSITION IS LESS THAN PIVOT
         return Math.abs(pivotEncoder.get()) < inwardPivotPos;
     }
-
+/*
     public boolean grabbingHigh(){      //CHECKS IF PIVOT ENCODER REACHED HIGH BAR
         return pivotEncoder.get() < grabbingHighPivotPos; 
     }
-
+*/
     public boolean middleEncReached() {     //CHECKS IF PIVOT IS PERPENDICULAR TO FLOOR
         return pivotEncoder.get() < midPivotPos; 
     }
