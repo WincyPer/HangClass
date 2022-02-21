@@ -25,13 +25,11 @@ public class HangPivot {
     private AHRS navX;
 
     //  VARIABLES [SUBJECT TO CHANGE]  //
-    private final double inwardPivotPos = 150.0;      
-    private final double outwardPivotPos = 200.0;
-    private final double midPivotPos = 175.0; 
-    private final double inwardPivotSpeed = 0.25;
+    private final double inwardPivotPos = 150.0;    //VALUE FOR INWARD PIVOT (USED IN HIGH HANG SETUP OF HANG CODE)    
+    private final double outwardPivotPos = 200.0;   //VALUE FOR OUTWARD PIVOT (USED IN MID HANG SETUP OF HANG CODE)
+    private final double midPivotPos = 175.0;       //VALUE FOR PERPENDICULAR POSITION (USED TO SECURE PIVOT ON RUNGS)
+    private final double inwardPivotSpeed = 0.25;       
     private final double outwardPivotSpeed = -0.25;
-    //private final double grabbingHighPivotPos = 1400.0; 
-
     
     /////////////////////////////////////////////
     //                                         //

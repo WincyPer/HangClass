@@ -21,7 +21,7 @@ public class Hang {
     //PIVOT
     private HangPivot pivot;
 
-    //COUNTERS AND OTHER VARIABLES
+    //COUNTERS FOR HANG CASE STATEMENTS
     private int setUpMidCount = 0;
     private int setUpHighCount = 0;
     private int setUpHighGrabCount = 0;
