@@ -236,10 +236,13 @@ public class Hang {
             
             case 0:
             //retract elevator until pivotable enc is reached 
-            if(elevator.pivotableEncoderReached()){  // if elevator enc is higher than pivotable enc stop pivot and retract slow
-                pivot.setStop();
-                elevator.setElevatorRetractSlow();
+            if(elevator.pivotableEncoderReached()){  // if elevator enc is higher than pivotable enc, stop elevator
+                elevator.setElevatorStop();
                 setUpHighGrabCount++; 
+            }
+
+            else{
+                elevator.setElevatorRetractSlow();
             }
             break; 
 
