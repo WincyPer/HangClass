@@ -1,14 +1,9 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.DigitalInput;
-import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Hang {
-    //MASTER
     /////////////////////////////////////////////
     //                                         //
     //                VARIABLES                //
@@ -88,7 +83,7 @@ public class Hang {
     //                                         //
     /////////////////////////////////////////////
 
-    public void resetCounters(){
+    public void resetCounters(){        //RESETS ALL CASE COUNTERS
         setUpMidCount = 0;
         setUpHighCount = 0; 
         setUpHighGrabCount = 0;
@@ -184,7 +179,7 @@ public class Hang {
         }
     }
 
-    private void highHangSetup(){
+    private void highHangSetup(){       //MAY NOT BE USED, DUE TO THE STABILIZATION OF THE ROBOT
         switch(setUpHighCount){
             case 0: 
             // extend elevator (to a certain encoder extent)
@@ -281,8 +276,8 @@ public class Hang {
             break;
 
             case 5:    
-            //extend elevator to small extend limit
-            if(!elevator.belowBottomEncoderLimitReached()){    //if top enc limit(small extend limit) is reached
+            //extend elevator to bottom encoder limit
+            if(!elevator.belowBottomEncoderLimitReached()){    //if bot enc limit(small extend limit) is reached (REVERSED BOOLEAN)
                 elevator.setElevatorStop();           //stop elevator
                 setUpHighGrabCount++;
             }

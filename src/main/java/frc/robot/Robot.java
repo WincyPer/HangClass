@@ -5,9 +5,6 @@
 package frc.robot;
 //IMPORTS
 import edu.wpi.first.wpilibj.TimedRobot;
-
-import javax.swing.text.DefaultStyledDocument.ElementSpec;
-
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -18,9 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
-
-import org.ejml.ops.ReadMatrixCsv;
-
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";

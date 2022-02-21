@@ -95,11 +95,7 @@ public class HangPivot {
     public boolean inwardEncReached(){       //RETURNS TRUE IF POSITION IS LESS THAN PIVOT
         return Math.abs(pivotEncoder.get()) < inwardPivotPos;
     }
-/*
-    public boolean grabbingHigh(){      //CHECKS IF PIVOT ENCODER REACHED HIGH BAR
-        return pivotEncoder.get() < grabbingHighPivotPos; 
-    }
-*/
+
     public boolean middleEncReached() {     //CHECKS IF PIVOT IS PERPENDICULAR TO FLOOR
         return pivotEncoder.get() < midPivotPos; 
     }
@@ -114,7 +110,7 @@ public class HangPivot {
         pivotEncoder.reset();
     }
 
-    public void pivotOutwardLim(){    //PIVOTS OUTWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS [INWARD = TOWARDS ROBOT BASE, OUTWARD = TOWARDS ROBOT PERIMETER]
+    private void pivotOutwardLim(){    //PIVOTS OUTWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS [INWARD = TOWARDS ROBOT BASE, OUTWARD = TOWARDS ROBOT PERIMETER]
         if(backLimitTouched()){
             hangPivot.set(0);
         }
@@ -130,7 +126,7 @@ public class HangPivot {
         }
     }
 
-    public void pivotInwardLim(){     //PIVOTS INWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS
+    private void pivotInwardLim(){     //PIVOTS INWARD FOR A CERTAIN AMOUNT OF ENCODER COUNTS
         if(frontLimitTouched()){   //IF THE FRONT LIMIT IS NOT TOUCHED
             hangPivot.set(0);
         }
@@ -158,7 +154,7 @@ public class HangPivot {
         hangPivot.set(pivotSpeed);
     }
 
-    public void stopPivot(){       //STOPS HANG PIVOT
+    private void stopPivot(){       //STOPS HANG PIVOT
         hangPivot.set(0);
     }
 
