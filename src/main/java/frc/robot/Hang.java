@@ -26,7 +26,6 @@ public class Hang {
     private int setUpHighCount = 0;
     private int setUpHighGrabCount = 0;
 
-
     private Timer timer;
 
     /////////////////////////////////////////////
@@ -166,7 +165,6 @@ public class Hang {
             }
             break; 
 
-            //QUESTIONABLE IF THE DRIVERS WANT IT, BUT WE HAVE TO TALK WITH THEM :)
             case 6:
             // elevator extends (to secure pivot hook)
             if(!elevator.belowBottomEncoderLimitReached()){             //if elevator reaches small enc limit, stop
@@ -186,6 +184,7 @@ public class Hang {
 
     private void highHangSetup(){
         switch(setUpHighCount){
+            /*
             case 0: 
             // extend elevator (to a certain encoder extent)
             if (elevator.aboveTopEncoderLimitReached()) {  //VALUE SUBJECT TO CHANGE    // if top limit or small encoder limit isn't reached 
@@ -195,8 +194,9 @@ public class Hang {
                 elevator.setElevatorExtend();                                             // else stop
             }
             break; 
+            */
 
-            case 1: 
+            case 0: 
             //pivot inwards 
             if (pivot.inwardEncReached() || pivot.frontLimitTouched()){           // if neither inward limit is reached 
                 pivot.setStop();
@@ -207,7 +207,7 @@ public class Hang {
             }
             break; 
 
-            case 2: 
+            case 1: 
             //elevator extend 
             if (elevator.topLimitTouched()) {                                    // if neither top limit is reached 
                 elevator.setElevatorStop();                                          // extend at normal speed 
@@ -223,7 +223,7 @@ public class Hang {
             }
             break; 
 
-            case 3: 
+            case 2: 
             setUpHighGrabCount = 0; 
             break; 
 
@@ -231,7 +231,7 @@ public class Hang {
         }
 
 
-    private void highHangGrab(){
+    private void highHangGrab(){        //FIND A WAY TO RESET THE COUNTER FOR THESE CASES (LAST RESORT: ANOTHER BUTTOn)
         switch(setUpHighGrabCount){
             
             case 0:
@@ -270,7 +270,7 @@ public class Hang {
             setUpHighGrabCount++;
             break;
 
-            case 3:
+            case 3:                     //DELAY WAS ADDED FOR TESTING PURPOSES
             if(timer.get() > 3){
                 timer.stop();
                 setUpHighGrabCount++;
@@ -288,8 +288,8 @@ public class Hang {
             }
             break;
 
-            case 5:     //WOAH WOAH WOAH
-            if(!elevator.belowBottomEncoderLimitReached()){    //if top enc limit(small extend limit) is reached
+            case 5:     
+            if(!elevator.belowBottomEncoderLimitReached()){    //if top enc limit(small extend limit) is reached  (REVERSED LOGIC, SINCE DIRECTION OF ELEV IS REVERSED)
                 elevator.setElevatorStop();           //stop elevator
                 setUpHighGrabCount++;
             }
@@ -306,11 +306,7 @@ public class Hang {
             case 7: 
             setUpHighCount = 0; 
             break; 
-
-        }
-
-
-
+        } 
     }
     
 
