@@ -6,9 +6,8 @@ package frc.robot;
 //IMPORTS
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-
+import java.nio.channels.NetworkChannel;
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
-
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -20,9 +19,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.ejml.ops.ReadMatrixCsv;
-
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
@@ -43,15 +43,16 @@ public class Robot extends TimedRobot {
   private AHRS navX;
 
   private Joystick joystick;
+  //private Joystick joystick1;
   private HangElevator elevator;
   private HangPivot pivot;
   private Hang hangClass;
 
   private Drive drive;
-  private CANSparkMax frontleft;
-  private CANSparkMax frontright;
-  private CANSparkMax backleft;
-  private CANSparkMax backright;
+  private CANSparkMax frontLeft;
+  private CANSparkMax frontRight;
+  private CANSparkMax backLeft;
+  private CANSparkMax backRight;
   
   @Override
   public void robotInit() {
@@ -71,12 +72,22 @@ public class Robot extends TimedRobot {
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
+    //joystick1 = new Joystick(1);
 
     pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
     hangClass = new Hang(pivot, elevator);
+    hangElevatorMotor.setNeutralMode(NeutralMode.Brake);
+    hangPivotMotor.setNeutralMode(NeutralMode.Brake);
 
-    drive = new Drive(frontleft, backleft, frontright, backright);
+
+    frontLeft = new CANSparkMax(7, MotorType.kBrushless);
+    backLeft = new CANSparkMax (8, MotorType.kBrushless);
+    frontRight = new CANSparkMax(5, MotorType.kBrushless);
+    backRight = new CANSparkMax(6, MotorType.kBrushless);
+    
+
+    drive = new Drive(frontLeft, backLeft, frontRight, backRight);
 
   }
 
@@ -95,7 +106,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
+  /*  switch (m_autoSelected) {
       case kCustomAuto:
       break;
 
@@ -103,7 +114,7 @@ public class Robot extends TimedRobot {
       default:
       break;
 
-    }
+    } */
   }
 
 
@@ -116,10 +127,11 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
    
     SmartDashboard.putNumber("AXIS NUMBER", joystick.getRawAxis(3)); 
+    SmartDashboard.putNumber("DRIVER TIME", DriverStation.getMatchTime());
 
     if (joystick.getRawAxis(3) == -1) {
       SmartDashboard.putString("MODE:", "REAAALLL!!!");
-      drive.arcadeDrive(joystick.getY(), joystick.getX());
+      //drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
       if (joystick.getRawButton(3)) {
         hangClass.setMidHang();
       } 
@@ -163,7 +175,9 @@ public class Robot extends TimedRobot {
           hangClass.setNothing();
         }
 
-      } else {
+      } 
+      
+      else {
         hangClass.setNothing(); 
       }
 
