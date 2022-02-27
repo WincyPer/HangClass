@@ -5,6 +5,7 @@
 package frc.robot;
 //IMPORTS
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax;
 
 import org.ejml.ops.ReadMatrixCsv;
 
@@ -44,6 +46,12 @@ public class Robot extends TimedRobot {
   private HangElevator elevator;
   private HangPivot pivot;
   private Hang hangClass;
+
+  private Drive drive;
+  private CANSparkMax frontleft;
+  private CANSparkMax frontright;
+  private CANSparkMax backleft;
+  private CANSparkMax backright;
   
   @Override
   public void robotInit() {
@@ -51,16 +59,15 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-                                            //PORT NUMBERS ARE NOT FINAL FOR THE NEW ROBOT
-    hangPivotMotor = new WPI_TalonSRX(0);
-    hangElevatorMotor = new WPI_TalonFX(3);
+    hangPivotMotor = new WPI_TalonSRX(4);
+    hangElevatorMotor = new WPI_TalonFX(2);
     pivotEncoder = new TalonEncoder(hangPivotMotor);
     elevatorEncoder = new TalonFXSensorCollection(hangElevatorMotor);
 
-    hangTopLimit = new DigitalInput(4);
-    hangBotLimit = new DigitalInput(3);
-    hangFrontLimit = new DigitalInput(1);
-    hangBackLimit = new DigitalInput(5);
+    hangTopLimit = new DigitalInput(2);
+    hangBotLimit = new DigitalInput(1);
+    hangFrontLimit = new DigitalInput(3);
+    hangBackLimit = new DigitalInput(0);
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
@@ -68,6 +75,8 @@ public class Robot extends TimedRobot {
     pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
     hangClass = new Hang(pivot, elevator);
+
+    drive = new Drive(frontleft, backleft, frontright, backright);
 
   }
 
@@ -109,7 +118,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("AXIS NUMBER", joystick.getRawAxis(3)); 
 
     if (joystick.getRawAxis(3) == -1) {
-
+      SmartDashboard.putString("MODE:", "REAAALLL!!!");
+      drive.arcadeDrive(joystick.getY(), joystick.getX());
       if (joystick.getRawButton(3)) {
         hangClass.setMidHang();
       } 
@@ -136,7 +146,7 @@ public class Robot extends TimedRobot {
       }
       
       else if (joystick.getRawAxis(3) == 1) {
-
+        SmartDashboard.putString("MODE:", "ARTIFICIAL");
         if (joystick.getRawButton(3)) {
           hangClass.setElevatorManual();
           hangClass.manualElevator(joystick.getY());
