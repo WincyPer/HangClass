@@ -125,7 +125,7 @@ public class HangElevator{
     }
 
     public void manualElev(double speed){                                                   //if not at either limits, move to an inputted speed
-        if(!topLimitTouched() || !bottomLimitTouched())
+        //if(!topLimitTouched() || !bottomLimitTouched())
         elevatorMotor.set(speed);
     }
 

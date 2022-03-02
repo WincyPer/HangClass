@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   private AHRS navX;
 
   private Joystick joystick;
-  //private Joystick joystick1;
+  private Joystick joystick1;
   private HangElevator elevator;
   private HangPivot pivot;
   private Hang hangClass;
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
-    //joystick1 = new Joystick(1);
+    joystick1 = new Joystick(1);
 
     pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
@@ -151,37 +151,69 @@ public class Robot extends TimedRobot {
         pivot.resetEnc();
         elevator.encoderReset();
       } 
+
       else {
         hangClass.setNothing(); 
       }
+
+      hangClass.run();
       
       }
       
-      else if (joystick.getRawAxis(3) == 1) {
+      else if (joystick.getRawAxis(3) == 1) {       //MAKE SURE TO BE ADDING PIDS TO ELEVATOR AND PIVOT
         SmartDashboard.putString("MODE:", "ARTIFICIAL");
+
+        // joystick1 > drive & pivot 
+        //joystick > elev 
+
+        if(joystick1.getRawButton(5)){
+        drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
+        }
+
+        else{
+          drive.arcadeDrive(0, 0);
+        }
+
         if (joystick.getRawButton(3)) {
-          hangClass.setElevatorManual();
-          hangClass.manualElevator(joystick.getY());
+          //hangClass.setElevatorManual();
+          elevator.setElevatorTest();
+          //hangClass.manualElevator(joystick.getY());
+          elevator.testing(joystick.getY());
         } 
-        else if (joystick.getRawButton(4)) {
-          hangClass.setPivotManual();
-          hangClass.manualPivot(joystick.getY());
+
+        else if(joystick.getRawButton(4)){
+          elevator.setElevatorExtend();
+        }
+
+        else if(joystick.getRawButton(5)){
+          elevator.setElevatorRetract();
+        }
+
+        else{
+          elevator.setElevatorStop();
+        }
+
+        if (joystick1.getRawButton(6)) {
+          //hangClass.setPivotManual();
+          pivot.setTesting();
+          //hangClass.manualPivot(joystick.getY());
+          pivot.manualPivot(-joystick1.getY());
         } 
-        else if (joystick.getRawButton(8)) {
+
+        else if (joystick1.getRawButton(12)) {
           pivot.resetEnc();
           elevator.encoderReset();
         } 
+
         else {
-          hangClass.setNothing();
+          //hangClass.setNothing();
+          pivot.setStop();
         }
-
       } 
-      
-      else {
-        hangClass.setNothing(); 
-      }
+    
+    elevator.run();
+    pivot.run();
 
-    hangClass.run();
   }
 
   /** This function is called once when the robot is disabled. */
