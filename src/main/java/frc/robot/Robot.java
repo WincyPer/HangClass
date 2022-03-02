@@ -132,6 +132,7 @@ public class Robot extends TimedRobot {
     if (joystick.getRawAxis(3) == -1) {
       SmartDashboard.putString("MODE:", "REAAALLL!!!");
       //drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
+      
       if (joystick.getRawButton(3)) {
         hangClass.setMidHang();
       } 
@@ -142,11 +143,11 @@ public class Robot extends TimedRobot {
       else if(joystick.getRawButton(5)){
         hangClass.setHighHangGrab();
       }
-/*
+  
       else if(joystick.getRawButton(6)){
         hangClass.resetCounters();
       }
-*/
+
       else if (joystick.getRawButton(8)) {
         pivot.resetEnc();
         elevator.encoderReset();
@@ -158,7 +159,7 @@ public class Robot extends TimedRobot {
 
       hangClass.run();
       
-      }
+    }
       
       else if (joystick.getRawAxis(3) == 1) {       //MAKE SURE TO BE ADDING PIDS TO ELEVATOR AND PIVOT
         SmartDashboard.putString("MODE:", "ARTIFICIAL");
@@ -172,7 +173,7 @@ public class Robot extends TimedRobot {
 
         else{
           drive.arcadeDrive(0, 0);
-        }
+        } 
 
         if (joystick.getRawButton(3)) {
           //hangClass.setElevatorManual();
