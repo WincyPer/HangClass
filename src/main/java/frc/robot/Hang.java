@@ -270,7 +270,7 @@ public class Hang {
             */
 
             case 0:
-            if(elevator.bottomLimitTouched()){
+            if(elevator.bottomLimitTouched()){      //retract elevator until the bottom limit has been touched
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
             }
@@ -281,7 +281,7 @@ public class Hang {
             break;
 
             case 1:
-            if(!pivot.middleEncReached()){
+            if(!pivot.middleEncReached()){      //pivot outward until the pivot hook is nearby the rung (not on rung) [REVERSED LOGIC]
                 pivot.setStop();
                 setUpHighGrabCount++;
             }
@@ -292,7 +292,7 @@ public class Hang {
             break;
 
             case 2:
-            if(!elevator.belowBottomEncoderLimit()){
+            if(!elevator.belowBottomEncoderLimit()){        //extend elevator until the bottom encoder limit [REVERSED LOGIC]
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
             }
@@ -302,20 +302,41 @@ public class Hang {
             }
             break;
 
-            
             case 3:
+            if(pivot.outwardEncReached()){
+                pivot.setStop();
+                setUpHighGrabCount++;
+            }
+
+            else{
+                pivot.setPivOutward();
+            }
+            break;
+
+            case 4:
+            if(elevator.bottomLimitTouched()){
+                elevator.setElevatorStop();
+                setUpHighGrabCount++;
+            }
+
+            else{
+                elevator.setElevatorRetract();
+            }
+            break;
+
+            case 5:
             timer.start();
             setUpHighGrabCount++;
             break;
 
-            case 4:                     //DELAY WAS ADDED FOR TESTING PURPOSES
+            case 6:                     //DELAY WAS ADDED FOR TESTING PURPOSES
             if(timer.get() > 3){
                 timer.stop();
                 setUpHighGrabCount++;
             }
             break;
 
-            case 5: 
+            case 7: 
             // pivot to mid 
             if (pivot.middleEncReached()) {         //if middle enc is reached 
                 pivot.setStop();                    //stop pivot
@@ -326,7 +347,7 @@ public class Hang {
             }
             break;
 
-            case 7:     
+            case 8:     
             if(!elevator.belowBottomEncoderLimit()){    //if top enc limit(small extend limit) is reached  (REVERSED LOGIC, SINCE DIRECTION OF ELEV IS REVERSED)
                 elevator.setElevatorStop();           //stop elevator
                 setUpHighGrabCount++;
@@ -336,12 +357,12 @@ public class Hang {
             }
             break; 
 
-            case 8:
+            case 9:
             timer.reset();
             setUpHighGrabCount++; 
             break;
 
-            case 9: 
+            case 10: 
             setUpHighCount = 0; 
             break; 
         } 
