@@ -19,7 +19,10 @@ public class Hang {
     private HangElevator elevator;
 
     //PIVOT
-    private HangPivot pivot;
+    private HangPivot pivot;\
+
+    //WEIGHT ADJUSTER
+    private 
 
     //COUNTERS AND OTHER VARIABLES
     private int setUpMidCount = 0;
@@ -292,7 +295,7 @@ public class Hang {
             break;
 
             case 2:
-            if(!elevator.belowBottomEncoderLimit()){        //extend elevator until the bottom encoder limit [REVERSED LOGIC]
+            if(!elevator.belowBottomEncoderLimit()){        //extend elevator until the bottom encoder limit [REVERSED]
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
             }
