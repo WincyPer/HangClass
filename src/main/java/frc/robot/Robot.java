@@ -4,6 +4,7 @@
 
 package frc.robot;
 //IMPORTS
+//MERGED FROM WEIGHT ADJUSTER
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import java.nio.channels.NetworkChannel;
