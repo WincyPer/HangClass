@@ -19,10 +19,10 @@ public class Hang {
     private HangElevator elevator;
 
     //PIVOT
-    private HangPivot pivot;\
+    private HangPivot pivot;
 
     //WEIGHT ADJUSTER
-    private 
+    //private 
 
     //COUNTERS AND OTHER VARIABLES
     private int setUpMidCount = 0;
