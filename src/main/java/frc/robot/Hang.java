@@ -22,13 +22,12 @@ public class Hang {
     private HangPivot pivot;
 
     //WEIGHT ADJUSTER
-    //private 
+    private WeightAdjuster weightAdjuster; 
 
     //COUNTERS AND OTHER VARIABLES
-    private int setUpMidCount = 0;
+    private int setUpMidCount = 0; 
     private int setUpHighCount = 0;
     private int setUpHighGrabCount = 0;
-
     private Timer timer;
 
     /////////////////////////////////////////////
@@ -37,10 +36,11 @@ public class Hang {
     //                                         //
     /////////////////////////////////////////////
 
-    public Hang (HangPivot Pivot, HangElevator Elevator){
+    public Hang (HangPivot Pivot, HangElevator Elevator, WeightAdjuster newWeightAdjuster){
         elevator = Elevator;
         pivot = Pivot;
         timer = new Timer();
+        weightAdjuster = newWeightAdjuster; 
     }
 
     /////////////////////////////////////////////
@@ -51,7 +51,7 @@ public class Hang {
 
     //PIVOT ENUMERATIONS
     private enum hangStates{
-        MIDHANG, HIGHHANG, HIGHHANGGRAB, PIVOTMANUAL, ELEVATORMANUAL, TESTING, NOTHING
+        MIDHANG, HIGHHANG, HIGHHANGGRAB, TESTING, NOTHING
     }
     
     private hangStates hangMode = hangStates.NOTHING; 
@@ -66,14 +66,6 @@ public class Hang {
 
     public void setHighHangGrab(){
         hangMode = hangStates.HIGHHANGGRAB;
-    }
-
-    public void setPivotManual() {
-        hangMode = hangStates.PIVOTMANUAL; 
-    }
-
-    public void setElevatorManual() {
-        hangMode = hangStates.ELEVATORMANUAL; 
     }
 
     public void setTesting() {
@@ -99,6 +91,26 @@ public class Hang {
 
     private void testing(){}
 
+    public void elevatorWeightUp() {
+        if (elevator.topLimitTouched()){        //if the top limit is touched, stop elevator
+            elevator.setElevatorStop();                                          
+            weightAdjuster.setWeightUp();
+        } 
+
+        else {
+            elevator.setElevatorExtend();       //extend elevator otherwise
+        }
+    }
+
+    public void elevatorWeightDown(){
+        if (weightAdjuster.beforeDownLim()) {       //if the weight is up, set it down until its in the right "down" position
+        weightAdjuster.setWeightDown();
+        } else {
+        weightAdjuster.setWeightStop();     //once the weight is down, retract elevator
+        elevator.setElevatorRetract();
+        }
+    }
+
     private void midHangGrab() {
         switch(setUpMidCount) {
 
@@ -111,7 +123,7 @@ public class Hang {
 
             case 1: 
             //pivot outward (to set up angle for mid rung grab)
-            if ((pivot.backLimitTouched() || pivot.outwardEncReached())) {      //if the back limit of pivot is touched OR back enc. limit is reached, STOP
+            if ((pivot.backLimitTouched() || pivot.afterOutwardEnc())) {      //if the back limit of pivot is touched OR back enc. limit is reached, STOP
                 pivot.setStop();
                 setUpMidCount++; 
             } else {                                                            //else, pivot outward
@@ -124,12 +136,10 @@ public class Hang {
             if (elevator.topLimitTouched()) {      //if the top limit of elevator is touched, STOP
                 elevator.setElevatorStop();
                 setUpMidCount++; 
-            } else {
-                if (!elevator.aboveTopEncoderLimit()) {                                      //else if top encoder isnt reached, extend at normal rate
-                    elevator.setElevatorExtend();
-                } else {
-                    elevator.setElevatorExtendSlow();                                         // else extend slow
-                }
+            } 
+            
+            else {
+                elevator.setElevatorExtend();
             }
             break; 
 
@@ -150,17 +160,13 @@ public class Hang {
                 setUpMidCount++;                                           // stop
             } 
             else {
-                if(!elevator.belowBottomEncoderLimit()) {                                    // else if close to bottom limit 
-                    elevator.setElevatorRetract();                                  // retract at normal speed
-                } else {
-                    elevator.setElevatorRetractSlow();                                      // else retract slowly 
-                }
+                elevator.setElevatorRetract();                                  // retract at normal speed
             }
             break; 
 
             case 5: 
             // pivot to mid (to place pivot hook above mid rung)
-            if(pivot.middleEncReached()){       //if middle encounter count is reached, stop
+            if(pivot.beforeMiddleEnc()){       //if middle encounter count is reached, stop
                 pivot.setStop();       
                 setUpMidCount++;
             }
@@ -202,7 +208,7 @@ public class Hang {
 
             case 0: 
             //pivot inwards 
-            if (pivot.inwardEncReached() || pivot.frontLimitTouched()){           // if neither inward limit is reached 
+            if (pivot.beforeInwardEnc() || pivot.frontLimitTouched()){           // if neither inward limit is reached 
                 pivot.setStop();
                 setUpHighCount++;                                                // pivot inward 
             }
@@ -279,12 +285,12 @@ public class Hang {
             }
 
             else{
-                elevator.setElevatorRetract();
+                elevatorWeightDown();
             }
             break;
 
             case 1:
-            if(!pivot.middleEncReached()){      //pivot outward until the pivot hook is nearby the rung (not on rung) [REVERSED LOGIC]
+            if(!pivot.beforeMiddleEnc()){      //pivot outward until the pivot hook is nearby the rung (not on rung) 
                 pivot.setStop();
                 setUpHighGrabCount++;
             }
@@ -295,7 +301,7 @@ public class Hang {
             break;
 
             case 2:
-            if(!elevator.belowBottomEncoderLimit()){        //extend elevator until the bottom encoder limit [REVERSED]
+            if(!elevator.belowBottomEncoderLimit()){        //extend elevator until the bottom encoder limit 
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
             }
@@ -306,7 +312,7 @@ public class Hang {
             break;
 
             case 3:
-            if(pivot.outwardEncReached()){
+            if(pivot.afterOutwardEnc()){        //pivot outward to allow the hook to go under the bar
                 pivot.setStop();
                 setUpHighGrabCount++;
             }
@@ -317,7 +323,7 @@ public class Hang {
             break;
 
             case 4:
-            if(elevator.bottomLimitTouched()){
+            if(elevator.bottomLimitTouched()){      //retract elevator all the way
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
             }
@@ -341,7 +347,7 @@ public class Hang {
 
             case 7: 
             // pivot to mid 
-            if (pivot.middleEncReached()) {         //if middle enc is reached 
+            if (pivot.beforeMiddleEnc()) {         //if middle enc is reached 
                 pivot.setStop();                    //stop pivot
                 setUpHighGrabCount++;
             }
@@ -351,7 +357,7 @@ public class Hang {
             break;
 
             case 8:     
-            if(!elevator.belowBottomEncoderLimit()){    //if top enc limit(small extend limit) is reached  (REVERSED LOGIC, SINCE DIRECTION OF ELEV IS REVERSED)
+            if(!elevator.belowBottomEncoderLimit()){    //if top enc limit(small extend limit) is reached 
                 elevator.setElevatorStop();           //stop elevator
                 setUpHighGrabCount++;
             }
@@ -361,51 +367,25 @@ public class Hang {
             break; 
 
             case 9:
+            if(weightAdjuster.afterHomeLim() || weightAdjuster.beforeHomeLim()){
+                weightAdjuster.setWeightHome();
+            } 
+
+            else{
+                weightAdjuster.setWeightStop();
+                setUpHighGrabCount++;
+            }
+            break;
+           
+            case 10:
             timer.reset();
             setUpHighGrabCount++; 
             break;
 
-            case 10: 
+            case 11: 
             setUpHighCount = 0; 
             break; 
         } 
-    }
-    
-
-    public void manualPivot(double pivSpeed){
-        pivot.setTesting();     //SETS PIVOT STATE TO TESTING
-        pivot.manualPivot(pivSpeed);
-    }
-
-    public void manualPivotButton(boolean buttonIn, boolean buttonOut){
-        pivot.setTesting();     //SETS PIVOT STATE TO TESTING
-
-        if(buttonIn){
-            pivot.pivotInward();        //PIVOT INWARD WHEN GIVEN BUTTON IS PRESSED
-        }
-        else if(buttonOut){
-            pivot.pivotOutward();       //PIVOT OUTWARD WHEN GIVEN BUTTON IS PRESSED
-        }
-        else{
-            pivot.setStop();
-        }
-    }
-
-    public void manualElevator(double elevSpeed){
-        elevator.setElevatorTest();     //SETS PIVOT STATE TO TESTING
-        elevator.manualElev(elevSpeed);
-    }
-
-    public void manualElevatorButton(boolean buttonExtend, boolean buttonRetract) {
-        elevator.setElevatorTest();     //SETS ELEVATOR STATE TO TESTING
-       
-        if (buttonExtend) {     
-            elevator.setElevatorExtend();       //EXTENDS WHEN GIVEN BUTTON IS PRESSED
-        } else if (buttonRetract) {
-            elevator.setElevatorRetract();      //RETRACTS WHEN GIVEN BUTTON IS PRESSED
-        } else {
-            elevator.setElevatorStop();     
-        }
     }
 
     private void stop(){        //STOPS ELEVATOR AND PIVOT
@@ -443,14 +423,6 @@ public class Hang {
             highHangGrab();
             break;
 
-            case PIVOTMANUAL:
-            testing();
-            break;
-
-            case ELEVATORMANUAL:
-            testing();
-            break;
-
             case TESTING:
             testing();
             break;
@@ -461,6 +433,7 @@ public class Hang {
 
         }
 
+        weightAdjuster.run();
         pivot.run(); 
         elevator.run();
 

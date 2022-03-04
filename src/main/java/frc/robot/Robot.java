@@ -4,7 +4,7 @@
 
 package frc.robot;
 //IMPORTS
-//MERGED FROM WEIGHT ADJUSTER
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import java.nio.channels.NetworkChannel;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode; 
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -34,8 +34,11 @@ public class Robot extends TimedRobot {
   //HANG MOTORS AND SENSORS
   private WPI_TalonSRX hangPivotMotor;
   private WPI_TalonFX hangElevatorMotor;
+  private WPI_TalonSRX weightAdjusterMotor; 
   private TalonEncoder pivotEncoder;
   private TalonFXSensorCollection elevatorEncoder;
+  private SingleChannelEncoder weightAdjusterEnc; 
+  private DigitalInput weightAdjusterDIO; 
   
   private DigitalInput hangTopLimit;
   private DigitalInput hangBotLimit;
@@ -48,6 +51,7 @@ public class Robot extends TimedRobot {
   private HangElevator elevator;
   private HangPivot pivot;
   private Hang hangClass;
+  private WeightAdjuster weightAdj; 
 
   private Drive drive;
   private CANSparkMax frontLeft;
@@ -63,8 +67,11 @@ public class Robot extends TimedRobot {
 
     hangPivotMotor = new WPI_TalonSRX(4);
     hangElevatorMotor = new WPI_TalonFX(2);
+    weightAdjusterMotor = new WPI_TalonSRX(9); 
     pivotEncoder = new TalonEncoder(hangPivotMotor);
     elevatorEncoder = new TalonFXSensorCollection(hangElevatorMotor);
+    weightAdjusterDIO = new DigitalInput(9); 
+    weightAdjusterEnc = new SingleChannelEncoder(weightAdjusterMotor, weightAdjusterDIO); 
 
     hangTopLimit = new DigitalInput(2);
     hangBotLimit = new DigitalInput(1);
@@ -77,7 +84,8 @@ public class Robot extends TimedRobot {
 
     pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
-    hangClass = new Hang(pivot, elevator);
+    weightAdj = new WeightAdjuster(weightAdjusterMotor, weightAdjusterEnc); 
+    hangClass = new Hang(pivot, elevator, weightAdj);
     hangElevatorMotor.setNeutralMode(NeutralMode.Brake);
     hangPivotMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -166,7 +174,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putString("MODE:", "ARTIFICIAL");
 
         // joystick1 > drive & pivot 
-        //joystick > elev 
+        //joystick > elevator & weightAdj
 
         if(joystick1.getRawButton(5)){
         drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
@@ -177,9 +185,7 @@ public class Robot extends TimedRobot {
         } 
 
         if (joystick.getRawButton(3)) {
-          //hangClass.setElevatorManual();
           elevator.setElevatorTest();
-          //hangClass.manualElevator(joystick.getY());
           elevator.testing(joystick.getY());
         } 
 
@@ -196,9 +202,7 @@ public class Robot extends TimedRobot {
         }
 
         if (joystick1.getRawButton(6)) {
-          //hangClass.setPivotManual();
           pivot.setTesting();
-          //hangClass.manualPivot(joystick.getY());
           pivot.manualPivot(-joystick1.getY());
         } 
 
@@ -208,13 +212,25 @@ public class Robot extends TimedRobot {
         } 
 
         else {
-          //hangClass.setNothing();
           pivot.setStop();
         }
+
+        if(joystick.getRawButton(7)){
+          weightAdj.setWeightTest();
+          weightAdj.manualWeight(joystick.getY());
+        }
+
+        else{
+          weightAdj.setWeightStop();
+        }
+
+        weightAdj.run();
+        elevator.run();
+        pivot.run();
+
       } 
     
-    elevator.run();
-    pivot.run();
+    
 
   }
 

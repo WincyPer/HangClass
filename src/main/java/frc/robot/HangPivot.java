@@ -16,6 +16,8 @@ public class HangPivot {
     //                                         //
     /////////////////////////////////////////////
 
+    //FROM HOME POSITION, OUTWARD IS POSITIVE
+    
     //775 MOTOR
     private MotorController hangPivot; 
     private TalonEncoder pivotEncoder;       
@@ -96,15 +98,15 @@ public class HangPivot {
         return frontSwitch.get();
     }
 
-    public boolean outwardEncReached(){      //RETURNS TRUE IF POSITION IS GREATER THAN PIVOT
+    public boolean afterOutwardEnc(){      //RETURNS TRUE IF POSITION IS GREATER THAN PIVOT
         return Math.abs(pivotEncoder.get()) > outwardPivotPos;
     }
 
-    public boolean inwardEncReached(){       //RETURNS TRUE IF POSITION IS LESS THAN PIVOT
+    public boolean beforeInwardEnc(){       //RETURNS TRUE IF POSITION IS LESS THAN PIVOT
         return Math.abs(pivotEncoder.get()) < inwardPivotPos;
     }
 
-    public boolean middleEncReached() {     //RETURNS TRUE IF PIVOT IS PERPENDICULAR TO FLOOR, COMING FROM AN OUTWARD POSITION
+    public boolean beforeMiddleEnc() {     //RETURNS TRUE IF PIVOT IS PERPENDICULAR TO FLOOR, COMING FROM AN OUTWARD POSITION
         return pivotEncoder.get() < midPivotPos; 
     }
 
@@ -124,7 +126,7 @@ public class HangPivot {
         }
 
         else{
-            if(!middleEncReached()){
+            if(!beforeMiddleEnc()){
                 hangPivot.set(inwardPivotSpeed);
             }
 
@@ -140,7 +142,7 @@ public class HangPivot {
         }
 
         else{
-            if(!outwardEncReached()){
+            if(!afterOutwardEnc()){
                 hangPivot.set(outwardPivotSpeed);
             }
 
@@ -157,7 +159,7 @@ public class HangPivot {
         }
 
         else{
-            if(!inwardEncReached()){    //IF THE INWARD ENC LIMIT IS NOT REACHED, PIVOT INWARD
+            if(!beforeInwardEnc()){    //IF THE INWARD ENC LIMIT IS NOT REACHED, PIVOT INWARD
                 hangPivot.set(inwardPivotSpeed);
             }
 
@@ -167,11 +169,11 @@ public class HangPivot {
         }
     }
 
-    public void pivotOutward(){      //MANUALLY PIVOT OUTWARD
+    private void pivotOutward(){      //MANUALLY PIVOT OUTWARD
         hangPivot.set(outwardPivotSpeed);
     }
 
-    public void pivotInward(){       //MANUALLY PIVOT INWARD
+    private void pivotInward(){       //MANUALLY PIVOT INWARD
         hangPivot.set(inwardPivotSpeed);       
     }
 

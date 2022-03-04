@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WeightAdjuster {
 
-    // ANGLING FOR HIGHER BARS REQUIRES FOR WEIGHTSHIFTER TO GO INWARD. BEFORE SHIFTING WEIGHT (FOR THE ANGLE), MAKE SURE ELEV IS FULLY RETRACTED
+    // ANGLING FOR HIGHER BARS REQUIRES FOR WEIGHTSHIFTER TO GO INWARD. BEFORE SHIFTING WEIGHT (FOR THE ANGLE), MAKE SURE ELEV IS FULLY EXTENDED
     // PULLING OFF FROM LOWER BARS REQUIRES FOR WEIGHTSHIFTER TO GO OUTWARD
 
     //ASSUME GOING UP IS POSITIVE
@@ -13,8 +13,8 @@ public class WeightAdjuster {
     private MotorController weightAdjuster;
     private SingleChannelEncoder weightEncoder;
 
-    private double weightSpeedUp = 0.20;               //speed going up
-    private double weightSpeedDown = -0.20;            //speed going down
+    public double weightSpeedUp = 0.20;               //speed going up
+    public double weightSpeedDown = -0.20;            //speed going down
 
     private double weightMaxUp = 100;            //encoder count for the most up it can be
     private double weightMaxDown = -100;          //encoder count for the farthest down it can be
@@ -51,19 +51,19 @@ public class WeightAdjuster {
     }
 
     //BOOLS
-    private boolean beforeUpLim() {
+    public boolean beforeUpLim() {
         return weightEncoder.get() <= weightMaxUp; 
     }
 
-    private boolean beforeDownLim() {
+    public boolean beforeDownLim() {
         return weightEncoder.get() >= weightMaxDown; 
     }
 
-    private boolean beforeHomeLim() {
+    public boolean beforeHomeLim() {
         return weightEncoder.get() > 1; 
     }
 
-    private boolean afterHomeLim() {
+    public boolean afterHomeLim() {
         return weightEncoder.get() < -1; 
     }
 
@@ -100,6 +100,14 @@ public class WeightAdjuster {
         else{
             weightAdjuster.set(0);
         }
+    }
+
+    public void manualUp() {
+        weightAdjuster.set(weightSpeedUp); 
+    }
+
+    public void manualDown() {
+        weightAdjuster.set(weightSpeedDown); 
     }
 
     private void stop(){
