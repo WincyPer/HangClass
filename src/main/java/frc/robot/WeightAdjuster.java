@@ -102,6 +102,10 @@ public class WeightAdjuster {
         }
     }
 
+    public void weightReset() {
+        weightEncoder.reset();
+    }
+
     public void manualUp() {
         weightAdjuster.set(weightSpeedUp); 
     }

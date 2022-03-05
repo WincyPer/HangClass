@@ -176,6 +176,48 @@ public class Robot extends TimedRobot {
         // joystick1 > drive & pivot 
         //joystick > elevator & weightAdj
 
+        if(joystick.getRawButton(3)){
+          pivot.setTesting();
+          pivot.manualPivot(joystick.getY());
+        }
+
+        else{
+          pivot.setStop();
+        }
+
+        if(joystick.getRawButton(7)){
+          elevator.setElevatorExtend();
+        }
+
+        else if(joystick.getRawButton(8)){
+          elevator.setElevatorRetract();
+        }
+
+        else{
+          elevator.setElevatorStop();
+        }
+
+        if(joystick.getRawButton(9)){
+          weightAdj.setWeightTest();
+          weightAdj.manualWeight(joystick.getY());
+        }
+
+        else{
+          weightAdj.setWeightStop();
+        }
+
+        if (joystick.getRawButton(11)) {
+          pivot.resetEnc();
+          elevator.encoderReset();
+          weightAdj.weightReset();
+        }
+
+        pivot.run();
+        elevator.run();
+        weightAdj.run();
+
+      
+/*
         if(joystick1.getRawButton(5)){
         drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
         }
@@ -227,8 +269,9 @@ public class Robot extends TimedRobot {
         weightAdj.run();
         elevator.run();
         pivot.run();
-
+*/
       } 
+      
     
     
 
