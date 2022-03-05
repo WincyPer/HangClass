@@ -166,6 +166,14 @@ public class Robot extends TimedRobot {
         hangClass.setNothing(); 
       }
 
+      if(joystick.getRawButton(7)){
+        drive.arcadeDrive(-joystick.getX(), -joystick.getY());
+      }
+
+      else{
+        drive.arcadeDrive(0, 0);
+      }
+
       hangClass.run();
       
     }
@@ -186,11 +194,16 @@ public class Robot extends TimedRobot {
         }
 
         if(joystick.getRawButton(7)){
-          elevator.setElevatorExtend();
+          elevator.setElevatorExtendLim();
         }
 
         else if(joystick.getRawButton(8)){
-          elevator.setElevatorRetract();
+          elevator.setElevatorRetractLim();
+        }
+
+        else if (joystick.getRawButton(12)){
+          elevator.setElevatorTest();
+          elevator.manualElev(joystick.getY());
         }
 
         else{
@@ -206,11 +219,19 @@ public class Robot extends TimedRobot {
           weightAdj.setWeightStop();
         }
 
-        if (joystick.getRawButton(11)) {
+        if(joystick.getRawButton(10)){
+          drive.arcadeDrive(-joystick.getX(), -joystick.getY());
+        }
+        else{
+          drive.arcadeDrive(0, 0);
+        }
+
+        if (joystick.getPOV()== 0) {
           pivot.resetEnc();
           elevator.encoderReset();
           weightAdj.weightReset();
         }
+        
 
         pivot.run();
         elevator.run();

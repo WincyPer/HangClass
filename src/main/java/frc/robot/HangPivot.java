@@ -30,12 +30,12 @@ public class HangPivot {
     private AHRS navX;
 
     //  VARIABLES [SUBJECT TO CHANGE]  //
-    //MAX IS 6013.0
-    private final double inwardPivotPos = 1500.0;    //VALUE FOR INWARD PIVOT (USED IN HIGH HANG SETUP OF HANG CODE)    
-    private final double outwardPivotPos = 4200.0;   //VALUE FOR OUTWARD PIVOT (USED IN MID HANG SETUP OF HANG CODE)
-    private final double midPivotPos = 3000.0;       //VALUE FOR PERPENDICULAR POSITION (USED TO SECURE PIVOT ON RUNGS)
-    private final double inwardPivotSpeed = -0.10;       
-    private final double outwardPivotSpeed = 0.10;
+    //MAX IS 7124.0
+    private final double inwardPivotPos = 0.20 * 7124.0;    //VALUE FOR INWARD PIVOT (USED IN HIGH HANG SETUP OF HANG CODE)    
+    private final double outwardPivotPos = 0.80 * 7124.0;   //VALUE FOR OUTWARD PIVOT (USED IN MID HANG SETUP OF HANG CODE)            //7097, 7121, 7154
+    private final double midPivotPos = 3959.33;       //VALUE FOR PERPENDICULAR POSITION (USED TO SECURE PIVOT ON RUNGS)        //OG VALUE: 3959.33
+    private final double inwardPivotSpeed = -0.15;       
+    private final double outwardPivotSpeed = 0.15;
     
     /////////////////////////////////////////////
     //                                         //
@@ -58,11 +58,19 @@ public class HangPivot {
     /////////////////////////////////////////////
 
     private enum States{
-        PIVOTINWARD, PIVOTOUTWARD, PIVOTMID, STOP, TESTING;
+        PIVOTINWARDLIM, PIVOTINWARD, PIVOTOUTWARDLIM, PIVOTOUTWARD, PIVOTMID, STOP, TESTING;
     }
 
     //  SETTING STATES  //
     public States pivotState = States.STOP;
+
+    public void setPivInwardLim(){
+        pivotState = States.PIVOTINWARDLIM;
+    }
+
+    public void setPivOutwardLim(){
+        pivotState = States.PIVOTOUTWARDLIM;
+    }
 
     public void setPivInward(){
         pivotState = States.PIVOTINWARD;
@@ -106,9 +114,11 @@ public class HangPivot {
         return Math.abs(pivotEncoder.get()) < inwardPivotPos;
     }
 
-    public boolean beforeMiddleEnc() {     //RETURNS TRUE IF PIVOT IS PERPENDICULAR TO FLOOR, COMING FROM AN OUTWARD POSITION
-        return pivotEncoder.get() < midPivotPos; 
+    public boolean inMidRange() {     //RETURNS TRUE IF PIVOT IS PERPENDICULAR TO FLOOR, COMING FROM AN OUTWARD POSITION
+        return pivotEncoder.get() > (midPivotPos - 75) && pivotEncoder.get() < (midPivotPos + 75); 
     }
+
+
 
     /////////////////////////////////////////////
     //                                         //
@@ -126,7 +136,7 @@ public class HangPivot {
         }
 
         else{
-            if(!beforeMiddleEnc()){
+            if(!inMidRange()){
                 hangPivot.set(inwardPivotSpeed);
             }
 
@@ -212,12 +222,20 @@ public class HangPivot {
             testing();
             break;
 
-            case PIVOTOUTWARD:
+            case PIVOTOUTWARDLIM:
             pivotOutwardLim();
             break;
 
-            case PIVOTINWARD:
+            case PIVOTINWARDLIM:
             pivotInwardLim();
+            break;
+
+            case PIVOTOUTWARD:
+            pivotOutward();
+            break;
+
+            case PIVOTINWARD:
+            pivotInward();
             break;
 
             case PIVOTMID:
