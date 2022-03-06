@@ -94,6 +94,10 @@ public class HangElevator{
         return elevatorEncoder.getIntegratedSensorPosition() >= (equalToPivot + 30000);
     }
 
+    public boolean abovePivotHigh(){
+        return elevatorEncoder.getIntegratedSensorPosition() >= (equalToPivot + 50000);
+    }
+
     public boolean belowPivot(){
         return elevatorEncoder.getIntegratedSensorPosition() <= (equalToPivot - 30000);
     }

@@ -22,6 +22,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode; 
+import edu.wpi.first.math.controller.PIDController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
 
   //HANG MOTORS AND SENSORS
   private WPI_TalonSRX hangPivotMotor;
+  private PIDController pivotPID;
   private WPI_TalonFX hangElevatorMotor;
   private WPI_TalonSRX weightAdjusterMotor; 
   private TalonEncoder pivotEncoder;
@@ -80,12 +82,12 @@ public class Robot extends TimedRobot {
     navX = new AHRS(SPI.Port.kMXP);
 
     joystick = new Joystick(0);
-    joystick1 = new Joystick(1);
+    //joystick1 = new Joystick(1);
 
     pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
     weightAdj = new WeightAdjuster(weightAdjusterMotor, weightAdjusterEnc); 
-    hangClass = new Hang(pivot, elevator, weightAdj);
+    hangClass = new Hang(pivot, elevator, weightAdj, pivotEncoder);
     hangElevatorMotor.setNeutralMode(NeutralMode.Brake);
     hangPivotMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -160,7 +162,8 @@ public class Robot extends TimedRobot {
       else if (joystick.getRawButton(8)) {
         pivot.resetEnc();
         elevator.encoderReset();
-      } 
+      }
+
 
       else {
         hangClass.setNothing(); 
