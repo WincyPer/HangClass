@@ -120,29 +120,29 @@ public class Hang {
         }
     }
 
-    private void midHangGrab() {
+    private void midHangGrab() {        //STARTING: ON THE FLOOR, BEHIND THE MID RUNG
         switch(setUpMidCount) {
 
             case 0:
-            //resets encoder
+            //RESETS ENCODER
             pivot.resetEnc();
             elevator.encoderReset();
             setUpMidCount++;
             break;
 
             case 1: 
-            //pivot outward (to set up angle for mid rung grab)
-            if (pivot.afterOutwardEnc()) {      //if the back limit of pivot is touched OR back enc. limit is reached, STOP
+            //PIVOT OUTWARD
+            if (pivot.afterOutwardEnc()) {     
                 pivot.setStop();
                 setUpMidCount++; 
-            } else {                                                            //else, pivot outward
+            } else {                                                          
                 pivot.setPivOutward(); 
             }
             break; 
 
             case 2: 
-            //elevator extend (all the way to the top)
-            if (elevator.topLimitTouched()) {      //if the top limit of elevator is touched, STOP
+            //EXTEND ELEVATOR TO LIMIT SWITCH
+            if (elevator.topLimitTouched()) {      
                 elevator.setElevatorStop();
                 timer.start();
                 setUpMidCount++; 
@@ -154,24 +154,26 @@ public class Hang {
             break; 
 
             case 3: 
-            //add a delay in between, to allow drivers to choose when to retract
-            if (timer.get() >= 5) {     //if timer > 5, stop the timer
+            //DELAY FOR DRIVERS TO "CHOOSE" THEIR RETRACT
+            if (timer.get() >= 5) {     //after five seconds, move on to the next case
                 timer.stop(); 
                 setUpMidCount++; 
             }
             break;  
 
-            case 4:                                                             //PID
+            case 4:               
+            //RETRACT ELEVATOR UNTIL PIVOT IS ABOVE RUNG                                              
             if (elevator.belowPivot()) {
                 elevator.setElevatorStop();  
                 setUpMidCount++;
             } 
             else {
-                elevator.setRetract();                                  // retract at normal speed
+                elevator.setRetract();                                  
             }
             break; 
 
-            case 5:     //INWARD PIVOT UNTIL PIVOT LINES UP WITH BAR
+            case 5:     
+            //INWARD PIVOT UNTIL PIVOT LINES UP WITH RUNG
             if(pivot.beforeMidRange()){
                 pivot.setStop();
                 setUpMidCount++;
@@ -182,26 +184,28 @@ public class Hang {
             break;
 
             case 6:
-            // elevator extends (to secure pivot hook)
-            if(elevator.abovePivot()){             //if elevator reaches small enc limit, stop
+            //EXTEND ELEVATOR UNTIL PIVOT IS ON THE RUNG
+            if(elevator.abovePivot()){            
                 elevator.setElevatorStop();
                 setUpMidCount++;
             }
             else{
-                elevator.setExtend();               // else extend slow
+                elevator.setExtend();               
             }
             break;  
 
             case 8: 
-            timer.reset();  //resets timer
+            //RESETS TIMER FOR DELAY
+            timer.reset();  
             break; 
         }   
     }
 
     private void highHangSetup(){
-        switch(setUpHighCount){
+        switch(setUpHighCount){         //STARTING: ELEVATOR IS SLIGHTLY ABOVE THE RUNG, PIVOT IS ON RUNG
            /* 
-            case 0:                                             //EXTEND UNTIL ONLY PIVOT IS ON HOOK
+            case 0:                                             
+            //EXTEND UNTIL ONLY PIVOT IS ON HOOK
             if (elevator.abovePivot()) {
                 elevator.setElevatorStop(); 
                 pivotPID.reset();
@@ -210,11 +214,13 @@ public class Hang {
                 elevator.setExtend();
             }
             break; 
-*/
-            case 0:
+            */
+
+            case 0:                                 
+            //PIVOT INWARD UNTIL IT IS ANGLED BELOW THE BAR
             if(pivotEncoder.get() < 800){
                 pivotPID.reset();
-                pivotPID.setPID(0.0005, 0.00011, 0.00004);
+                pivotPID.setPID(0.0005, 0.00011, 0.00004);      //SETS PID VALUES
                 pivot.setTesting();
                 setUpHighCount++;
             }
@@ -223,7 +229,8 @@ public class Hang {
             }
             break;
 
-            case 1:                                 //EXTEND UNTIL ELEVATOR IS BEHIND NEXT RUNGUH
+            case 1:                                 
+            //EXTEND UNTIL ELEVATOR IS BEHIND NEXT RUNG, PIVOT SHOULD ACTIVELY BE HOLDING ITSELF WITH A PID
             if (elevator.topLimitTouched()) {                                   
                 elevator.setElevatorStop();        
                 pivot.setStop();                               
@@ -237,6 +244,7 @@ public class Hang {
             break; 
 
             case 2: 
+            //RESET NEXT METHOD TO BE ABLE TO DO SEQUENTIALLY
             setUpHighGrabCount = 0; 
             break; 
 
@@ -246,7 +254,8 @@ public class Hang {
 
     private void highHangGrab(){        //STARTING: ELEVATOR SLIGHTLY RETRACTED AND ON HIGHER BAR, PIVOT STILL ON LOWER
         switch(setUpHighGrabCount){
-            case 0:                                     //RETRACT FULLY SO PIVOT CAN LET GO
+            case 0:                                     
+            //RETRACT FULLY SO PIVOT CAN LET GO
             if(elevator.bottomLimitTouched()){
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
@@ -257,7 +266,8 @@ public class Hang {
             }
             break;
 
-            case 1:                                         //PIVOT OUTWARD SO PIVOT LETS GO
+            case 1:                                         
+            //PIVOT OUTWARD UNTIL THE PIVOT IS OFF THE LOWER RUNG
             if(pivot.pivotUnhooked()){ 
                 pivot.setStop();
                 setUpHighGrabCount++;
@@ -269,7 +279,8 @@ public class Hang {
             break;
 
             case 2:
-            if(elevator.abovePivotHigh()){        //EXTEND UNTIL PIVOT CAN FIT UNDER RUNG
+            //EXTEND UNTIL PIVOT CAN FIT UNDER RUNG
+            if(elevator.abovePivotHigh()){        
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
             }
@@ -278,7 +289,8 @@ public class Hang {
             }
             break;
 
-            case 3:                             //PIVOT OUTWARD UNTIL BEHIND RUNG
+            case 3:                             
+            //PIVOT OUTWARD UNTIL BEHIND RUNG
             if(pivot.afterOutwardEnc()){        
                 pivot.setStop();
                 setUpHighGrabCount++;
@@ -289,7 +301,8 @@ public class Hang {
             }
             break;
 
-            case 4:                                     //FULL RETRACT SO PIVOT CAN GET ON
+            case 4:                                     
+            //RETRACT ELEVATOR UNTIL BOTTOM LIMIT, ALLOWING DRIVER TO PUT PIVOT ON RUNG
             if(elevator.bottomLimitTouched()){
                 elevator.setElevatorStop();
                 setUpHighGrabCount++;
@@ -299,8 +312,9 @@ public class Hang {
                 elevator.setElevatorRetractLim();
             }
             break;
-                                                            //MANUAL DRIVE PIVOT TO LINE UP WITH RUNG
+                                                            
             case 5: 
+            //RESET COUNTER FOR PREVIOUS METHOD
             setUpHighCount = 0; 
             break; 
         } 

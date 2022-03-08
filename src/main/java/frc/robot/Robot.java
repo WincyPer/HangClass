@@ -144,6 +144,14 @@ public class Robot extends TimedRobot {
       SmartDashboard.putString("MODE:", "REAAALLL!!!");
       //drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
       
+      if(joystick.getRawButton(10)){
+        drive.arcadeDrive(-joystick.getX(), -joystick.getY());
+      }
+
+      else{
+        drive.arcadeDrive(0, 0);
+      }
+
       if (joystick.getRawButton(3)) {
         hangClass.setMidHang();
       } 
@@ -154,27 +162,34 @@ public class Robot extends TimedRobot {
       else if(joystick.getRawButton(5)){
         hangClass.setHighHangGrab();
       }
-  
-      else if(joystick.getRawButton(6)){
+
+      else if(joystick.getRawButton(7)){
+        hangClass.setTesting();
+        elevator.setElevatorExtendLim();
+      }
+
+      else if(joystick.getRawButton(8)){
+        hangClass.setTesting();
+        elevator.setElevatorRetractLim();
+      }
+
+      else if(joystick.getRawButton(9)){
+        hangClass.setTesting();
+        pivot.setTesting();
+        pivot.manualPivot(joystick.getY());
+      }
+
+      else if(joystick.getRawButton(11)){
         hangClass.resetCounters();
       }
 
-      else if (joystick.getRawButton(8)) {
+      else if (joystick.getRawButton(12)) {
         pivot.resetEnc();
         elevator.encoderReset();
       }
 
-
       else {
         hangClass.setNothing(); 
-      }
-
-      if(joystick.getRawButton(7)){
-        drive.arcadeDrive(-joystick.getX(), -joystick.getY());
-      }
-
-      else{
-        drive.arcadeDrive(0, 0);
       }
 
       hangClass.run();
