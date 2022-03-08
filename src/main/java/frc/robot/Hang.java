@@ -123,46 +123,33 @@ public class Hang {
     private void midHangGrab() {        //STARTING: ON THE FLOOR, BEHIND THE MID RUNG
         switch(setUpMidCount) {
 
-            case 0:
-            //RESETS ENCODER
+            case 0:                     //RESETS ENCODER
             pivot.resetEnc();
             elevator.encoderReset();
             setUpMidCount++;
             break;
 
-            case 1: 
-            //PIVOT OUTWARD
-            if (pivot.afterOutwardEnc()) {     
+            case 1:                     //EXTEND ELEV AND PIVOT FOR SETUP POS.
+            if(elevator.topLimitTouched() && pivot.afterOutwardEnc()){
                 pivot.setStop();
-                setUpMidCount++; 
-            } else {                                                          
-                pivot.setPivOutward(); 
-            }
-            break; 
-
-            case 2: 
-            //EXTEND ELEVATOR TO LIMIT SWITCH
-            if (elevator.topLimitTouched()) {      
                 elevator.setElevatorStop();
                 timer.start();
-                setUpMidCount++; 
-            } 
-            
-            else {
-                elevator.setElevatorExtendLim();
+                setUpMidCount++;
             }
-            break; 
+            else{
+                elevator.setElevatorExtendLim();
+                pivot.setPivOutward();
+            }
+            break;
 
-            case 3: 
-            //DELAY FOR DRIVERS TO "CHOOSE" THEIR RETRACT
-            if (timer.get() >= 5) {     //after five seconds, move on to the next case
+            case 2:                      //DELAY FOR DRIVERS TO DRIVE TO RUNG
+            if (timer.get() >= 3) {     //after five seconds, move on to the next case
                 timer.stop(); 
                 setUpMidCount++; 
             }
             break;  
 
-            case 4:               
-            //RETRACT ELEVATOR UNTIL PIVOT IS ABOVE RUNG                                              
+            case 3:                         //RETRACT ELEVATOR UNTIL PIVOT IS ABOVE RUNG                                              
             if (elevator.belowPivot()) {
                 elevator.setElevatorStop();  
                 setUpMidCount++;
@@ -172,19 +159,18 @@ public class Hang {
             }
             break; 
 
-            case 5:     
-            //INWARD PIVOT UNTIL PIVOT LINES UP WITH RUNG
+            case 4:                         //INWARD PIVOT UNTIL PIVOT LINES UP WITH RUNG
             if(pivot.beforeMidRange()){
                 pivot.setStop();
                 setUpMidCount++;
             } 
             else{
-                pivot.setPivInward();
+                pivot.setTesting();
+                pivot.manualPivot(-0.30);
             }
             break;
 
-            case 6:
-            //EXTEND ELEVATOR UNTIL PIVOT IS ON THE RUNG
+            case 5:                         //EXTEND ELEVATOR UNTIL PIVOT IS ON THE RUNG
             if(elevator.abovePivot()){            
                 elevator.setElevatorStop();
                 setUpMidCount++;
@@ -194,8 +180,7 @@ public class Hang {
             }
             break;  
 
-            case 8: 
-            //RESETS TIMER FOR DELAY
+            case 6:                         //RESETS TIMER FOR DELAY
             timer.reset();  
             break; 
         }   
@@ -203,18 +188,6 @@ public class Hang {
 
     private void highHangSetup(){
         switch(setUpHighCount){         //STARTING: ELEVATOR IS SLIGHTLY ABOVE THE RUNG, PIVOT IS ON RUNG
-           /* 
-            case 0:                                             
-            //EXTEND UNTIL ONLY PIVOT IS ON HOOK
-            if (elevator.abovePivot()) {
-                elevator.setElevatorStop(); 
-                pivotPID.reset();
-                setUpHighCount++;
-            } else {
-                elevator.setExtend();
-            }
-            break; 
-            */
 
             case 0:                                 
             //PIVOT INWARD UNTIL IT IS ANGLED BELOW THE BAR
@@ -225,7 +198,8 @@ public class Hang {
                 setUpHighCount++;
             }
             else{
-                pivot.setPivInward();
+                pivot.setTesting();
+                pivot.manualPivot(-0.35);
             }
             break;
 
