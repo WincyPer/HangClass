@@ -24,6 +24,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode; 
 import edu.wpi.first.math.controller.PIDController;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -43,6 +44,16 @@ public class Robot extends TimedRobot {
   private TalonFXSensorCollection elevatorEncoder;
   private SingleChannelEncoder weightAdjusterEnc; 
   private DigitalInput weightAdjusterDIO; 
+
+  private WPI_TalonSRX intakeMotor;
+  private DigitalInput intakeSensor;
+  private Timer intakeTimer;
+  private WPI_VictorSPX intakeExt;
+  private DigitalInput intakeExtChannel;
+  private DigitalInput intakeArmLim;
+  private SingleChannelEncoder intakeExtEnc;
+  private WPI_VictorSPX outerRollers;
+  private Intake intake;
   
   private DigitalInput hangTopLimit;
   private DigitalInput hangBotLimit;
@@ -69,6 +80,17 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
+    intakeMotor = new WPI_TalonSRX(3);
+    intakeSensor = new DigitalInput(4);
+    intakeTimer = new Timer();
+
+    intakeExt = new WPI_VictorSPX(1);
+    intakeExtChannel = new DigitalInput(5);
+    intakeArmLim = new DigitalInput(6);
+    intakeExtEnc = new SingleChannelEncoder(intakeExt, intakeExtChannel);
+    outerRollers = new WPI_VictorSPX(0);
+    intake = new Intake(intakeMotor, intakeExt, outerRollers, intakeExtEnc, intakeSensor, intakeArmLim, intakeTimer);
+    
     hangPivotMotor = new WPI_TalonSRX(4);
     hangElevatorMotor = new WPI_TalonFX(2);
     weightAdjusterMotor = new WPI_VictorSPX(5); 
@@ -83,23 +105,20 @@ public class Robot extends TimedRobot {
     hangBackLimit = new DigitalInput(0);
     navX = new AHRS(SPI.Port.kMXP);
 
-    joystick = new Joystick(0);
-    //joystick1 = new Joystick(1);
-
     pivot = new HangPivot(hangPivotMotor, pivotEncoder, navX, hangFrontLimit, hangBackLimit); 
     elevator = new HangElevator(hangElevatorMotor, hangTopLimit, hangBotLimit, elevatorEncoder); 
     weightAdj = new WeightAdjuster(weightAdjusterMotor, weightAdjusterEnc); 
-    hangClass = new Hang(pivot, elevator, weightAdj, pivotEncoder);
+    hangClass = new Hang(pivot, elevator, intake, weightAdj, pivotEncoder);
     hangElevatorMotor.setNeutralMode(NeutralMode.Brake);
     hangPivotMotor.setNeutralMode(NeutralMode.Brake);
-
 
     frontLeft = new CANSparkMax(7, MotorType.kBrushless);
     backLeft = new CANSparkMax (8, MotorType.kBrushless);
     frontRight = new CANSparkMax(5, MotorType.kBrushless);
     backRight = new CANSparkMax(6, MotorType.kBrushless);
     
-
+    joystick = new Joystick(0);
+    //joystick1 = new Joystick(1);
     drive = new Drive(frontLeft, backLeft, frontRight, backRight);
 
   }
@@ -208,13 +227,38 @@ public class Robot extends TimedRobot {
         // joystick1 > drive & pivot 
         //joystick > elevator & weightAdj
 
-        if(joystick.getRawButton(3)){
-          pivot.setTesting();
-          pivot.manualPivot(joystick.getY());
+        if(joystick.getRawButton(1)){
+            pivot.setTesting();
+            pivot.manualPivot(joystick.getY());
+        }
+
+        else if(joystick.getRawButton(2)){
+            pivot.setPivInwardLim();
+        }
+
+        else if(joystick.getRawButton(3)){
+            pivot.setPivOutwardLim();
         }
 
         else{
-          pivot.setStop();
+            pivot.setStop();
+        }
+
+        if(joystick.getRawButton(4)){
+          intake.setTestingMode();
+          intake.manualIntakeExt(joystick.getY());
+        }
+
+        else if(joystick.getRawButton(5)){
+          intake.setExtend();
+        }
+
+        else if(joystick.getRawButton(6)){
+          intake.setMidway();
+        }
+
+        else{
+          intake.setStopMode();
         }
 
         if(joystick.getRawButton(7)){
@@ -256,7 +300,7 @@ public class Robot extends TimedRobot {
           //weightAdj.weightReset();
         }
         
-
+        intake.run();
         pivot.run();
         elevator.run();
         weightAdj.run();
@@ -316,9 +360,6 @@ public class Robot extends TimedRobot {
         pivot.run();
 */
       } 
-      
-    
-    
 
   }
 

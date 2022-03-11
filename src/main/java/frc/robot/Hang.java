@@ -24,6 +24,9 @@ public class Hang {
     private HangPivot pivot;
     private TalonEncoder pivotEncoder;
 
+    //INTAKE
+    private Intake intake;
+
     //PID
     private PIDController pivotPID;
 
@@ -42,9 +45,10 @@ public class Hang {
     //                                         //
     /////////////////////////////////////////////
 
-    public Hang (HangPivot Pivot, HangElevator Elevator, WeightAdjuster newWeightAdjuster, TalonEncoder pivotEnc){
+    public Hang (HangPivot Pivot, HangElevator Elevator, Intake Intake, WeightAdjuster newWeightAdjuster, TalonEncoder pivotEnc){
         elevator = Elevator;
         pivot = Pivot;
+        intake = Intake;
         timer = new Timer();
         weightAdjuster = newWeightAdjuster; 
         pivotPID = new PIDController(0, 0, 0);
@@ -118,14 +122,16 @@ public class Hang {
     public void elevatorWeightDown(){
         if (weightAdjuster.beforeDownLim()) {       //if the weight is up, set it down until its in the right "down" position
         weightAdjuster.setWeightDown();
-        } else {
+        } 
+        
+        else {
         weightAdjuster.setWeightStop();     //once the weight is down, retract elevator
         elevator.setElevatorRetractLim();
         }
     }
 */
 
-    private void resetPosition(){
+    private void resetPosition(){   //RESETS ENCODER WHEN PIVOT AND ELEVATOR TOUCHES THEIR RESPECTIVE LIMITS
         if(pivot.frontLimitTouched() && elevator.bottomLimitTouched()){
             pivot.setStop();
             pivot.resetEnc();
@@ -142,20 +148,21 @@ public class Hang {
     private void midHangGrab() {        //STARTING: ON THE FLOOR, BEHIND THE MID RUNG
         switch(setUpMidCount) {
 
-            case 0:                     //RESETS ENCODER
-            if(pivot.frontLimitTouched() && elevator.bottomLimitTouched() && intake.atbottompositionbruh){
+            case 0:                     
+            if(pivot.frontLimitTouched() && elevator.bottomLimitTouched() && intake.armIsDown()){
                 pivot.setStop();
                 pivot.resetEnc();
                 elevator.setElevatorStop();
                 elevator.encoderReset();
+                intake.setStopMode();
                 setUpMidCount++;
             }
     
             else{
                 pivot.setPivInwardLim();
                 elevator.setElevatorRetractLim();
-                intake.DOWNDOWNDOWN;
-            }                                        //add something to put the intake down and reset the encoders if we need to
+                intake.setExtend();                  //keep intake down
+            }                                      
             break;
 
             case 1:                     //EXTEND ELEV AND PIVOT FOR SETUP POS.
@@ -195,8 +202,7 @@ public class Hang {
                 setUpMidCount++;
             } 
             else{
-                pivot.setTesting();
-                pivot.manualPivot(-0.20);
+                pivot.setPivInward();
             }
             break;
 
@@ -228,8 +234,7 @@ public class Hang {
                 setUpHighCount++;
             }
             else{
-                pivot.setTesting();
-                pivot.manualPivot(-0.20);
+                pivot.setPivInward();
             }
             break;
 
@@ -305,11 +310,16 @@ public class Hang {
             }
             break;
 
-            case 4:                                     
+            case 4: 
+            //RESET COUNTER FOR PREVIOUS METHOD
+            setUpHighCount = 0; 
+            setUpHighGrabCount++;
+            break; 
+
+            case 5:                                     
             //RETRACT ELEVATOR UNTIL BOTTOM LIMIT, ALLOWING DRIVER TO PUT PIVOT ON RUNG
             if(elevator.bottomLimitTouched()){
                 elevator.setElevatorStop();
-                setUpHighGrabCount++;
             }
 
             else{
@@ -317,10 +327,6 @@ public class Hang {
             }
             break;
                                                             
-            case 5: 
-            //RESET COUNTER FOR PREVIOUS METHOD
-            setUpHighCount = 0; 
-            break; 
         } 
     }
 
@@ -345,6 +351,7 @@ public class Hang {
         SmartDashboard.putNumber("TIMER", timer.get()); 
 
         weightAdjuster.run();
+        intake.run();
         pivot.run(); 
         elevator.run();
 
