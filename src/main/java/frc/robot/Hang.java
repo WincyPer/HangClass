@@ -27,7 +27,7 @@ public class Hang {
     //PID
     private PIDController pivotPID;
 
-    //WEIGHT ADJUSTER
+    // ADJUSTER
     private WeightAdjuster weightAdjuster; 
 
     //COUNTERS AND OTHER VARIABLES
@@ -59,7 +59,7 @@ public class Hang {
 
     //PIVOT ENUMERATIONS
     private enum hangStates{
-        MIDHANG, HIGHHANG, HIGHHANGGRAB, TESTING, NOTHING
+        MIDHANG, HIGHHANG, HIGHHANGGRAB, RESETPOS, TESTING, NOTHING
     }
     
     private hangStates hangMode = hangStates.NOTHING; 
@@ -84,6 +84,10 @@ public class Hang {
         hangMode = hangStates.NOTHING; 
     }
 
+    public void setResetPos(){
+        hangMode = hangStates.RESETPOS;
+    }
+
     /////////////////////////////////////////////
     //                                         //
     //                 METHODS                 //
@@ -99,7 +103,7 @@ public class Hang {
     }    
 
     private void testing(){}
-
+/*
     public void elevatorWeightUp() {
         if (elevator.topLimitTouched()){        //if the top limit is touched, stop elevator
             elevator.setElevatorStop();                                          
@@ -119,14 +123,39 @@ public class Hang {
         elevator.setElevatorRetractLim();
         }
     }
+*/
 
+    private void resetPosition(){
+        if(pivot.frontLimitTouched() && elevator.bottomLimitTouched()){
+            pivot.setStop();
+            pivot.resetEnc();
+            elevator.setElevatorStop();
+            elevator.encoderReset();
+        }
+
+        else{
+            pivot.setPivInwardLim();
+            elevator.setElevatorRetractLim();
+        }
+    }
+    
     private void midHangGrab() {        //STARTING: ON THE FLOOR, BEHIND THE MID RUNG
         switch(setUpMidCount) {
 
             case 0:                     //RESETS ENCODER
-            pivot.resetEnc();
-            elevator.encoderReset();
-            setUpMidCount++;
+            if(pivot.frontLimitTouched() && elevator.bottomLimitTouched() && intake.atbottompositionbruh){
+                pivot.setStop();
+                pivot.resetEnc();
+                elevator.setElevatorStop();
+                elevator.encoderReset();
+                setUpMidCount++;
+            }
+    
+            else{
+                pivot.setPivInwardLim();
+                elevator.setElevatorRetractLim();
+                intake.DOWNDOWNDOWN;
+            }                                        //add something to put the intake down and reset the encoders if we need to
             break;
 
             case 1:                     //EXTEND ELEV AND PIVOT FOR SETUP POS.
@@ -139,6 +168,7 @@ public class Hang {
             else{
                 elevator.setElevatorExtendLim();
                 pivot.setPivOutward();
+                //bring the intake up to the midway position i think idk
             }
             break;
 
@@ -166,7 +196,7 @@ public class Hang {
             } 
             else{
                 pivot.setTesting();
-                pivot.manualPivot(-0.30);
+                pivot.manualPivot(-0.20);
             }
             break;
 
@@ -199,7 +229,7 @@ public class Hang {
             }
             else{
                 pivot.setTesting();
-                pivot.manualPivot(-0.35);
+                pivot.manualPivot(-0.20);
             }
             break;
 
@@ -329,6 +359,10 @@ public class Hang {
 
             case HIGHHANGGRAB:
             highHangGrab();
+            break;
+
+            case RESETPOS:
+            resetPosition();
             break;
 
             case TESTING:

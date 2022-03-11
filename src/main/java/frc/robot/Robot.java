@@ -23,6 +23,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode; 
 import edu.wpi.first.math.controller.PIDController;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -32,11 +33,12 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  
   //HANG MOTORS AND SENSORS
   private WPI_TalonSRX hangPivotMotor;
   private PIDController pivotPID;
   private WPI_TalonFX hangElevatorMotor;
-  private WPI_TalonSRX weightAdjusterMotor; 
+  private WPI_VictorSPX weightAdjusterMotor; 
   private TalonEncoder pivotEncoder;
   private TalonFXSensorCollection elevatorEncoder;
   private SingleChannelEncoder weightAdjusterEnc; 
@@ -69,7 +71,7 @@ public class Robot extends TimedRobot {
 
     hangPivotMotor = new WPI_TalonSRX(4);
     hangElevatorMotor = new WPI_TalonFX(2);
-    weightAdjusterMotor = new WPI_TalonSRX(9); 
+    weightAdjusterMotor = new WPI_VictorSPX(5); 
     pivotEncoder = new TalonEncoder(hangPivotMotor);
     elevatorEncoder = new TalonFXSensorCollection(hangElevatorMotor);
     weightAdjusterDIO = new DigitalInput(9); 
@@ -163,6 +165,10 @@ public class Robot extends TimedRobot {
         hangClass.setHighHangGrab();
       }
 
+      else if(joystick.getRawButton(6)){
+        hangClass.setResetPos();
+      }
+
       else if(joystick.getRawButton(7)){
         hangClass.setTesting();
         elevator.setElevatorExtendLim();
@@ -247,7 +253,7 @@ public class Robot extends TimedRobot {
         if (joystick.getPOV()== 0) {
           pivot.resetEnc();
           elevator.encoderReset();
-          weightAdj.weightReset();
+          //weightAdj.weightReset();
         }
         
 

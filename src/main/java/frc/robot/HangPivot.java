@@ -34,7 +34,7 @@ public class HangPivot {
     private final double inwardPivotPos = 0.20 * 7124.0;    //VALUE FOR INWARD PIVOT (USED IN HIGH HANG SETUP OF HANG CODE)    
     private final double outwardPivotPos = 0.80 * 7124.0;   //VALUE FOR OUTWARD PIVOT (USED IN MID HANG SETUP OF HANG CODE)            //7097, 7121, 7154
     private final double midPivotPos = 4027;       //VALUE FOR PERPENDICULAR POSITION (USED TO SECURE PIVOT ON RUNGS)        //OG VALUE: 3959.33
-    private final double inwardPivotSpeed = -0.30;       
+    private final double inwardPivotSpeed = -0.20;  //USED TO BE -0.30     
     private final double outwardPivotSpeed = 0.20;
     private final double unhooked = 1850;
     
@@ -126,7 +126,7 @@ public class HangPivot {
     public boolean afterMidRange(){         //RETURNS TRUE IF PIVOT IS AFTER PARALLEL TO ELEVATOR
         return pivotEncoder.get() > (midPivotPos + 75);
     }
-
+                                                                                            // E < W < J = 3
     public boolean pivotUnhooked(){
         return pivotEncoder.get() > unhooked && pivotEncoder.get() < midPivotPos;
     }

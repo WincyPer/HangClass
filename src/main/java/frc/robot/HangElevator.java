@@ -30,6 +30,7 @@ public class HangElevator{
     private double pivotableEnc = 170000; 
     public double equalToPivot = 82451.3333;                            //encoder count for elevator to be same height as pivot       //82586, 82530, 82238
 //58593, , 55551, 55390, 59987, 56617
+    
     //CONSTRUCTOR
     public HangElevator(MotorController elevMotor, DigitalInput limitSwitchTop, DigitalInput limitSwitchBottom, TalonFXSensorCollection elevEncoder){
         elevatorMotor = elevMotor;
