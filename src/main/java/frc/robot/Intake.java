@@ -22,6 +22,7 @@ public class Intake {
     private double extEncUp = -190;               // encoder for the extension going up (TEST) //-197 //-193 //-197'
     private double extEncMidWay = -90;
     private double extEncDown = 190;            // encoder for the extension going down(TEST) //192 //199 //186
+    private double insideRobotPerimeter = -140; // Encoder count for bringing the arm extension to the point where it is inside the robot perimeter
 
     //SPEEDS:
     private double intakeSpeed = 1;           // the speed of the intake motor
@@ -100,8 +101,8 @@ public class Intake {
         return intakeExtEnc.get() <= extEncMidWay;
     }
 
-    public boolean afterMidway(){
-        return intakeExtEnc.get() > extEncMidWay;
+    public boolean extInsidePerimeter(){
+        return intakeExtEnc.get() <= insideRobotPerimeter;
     }
 
     public void setBarSpeed(double barSpeed){
@@ -115,13 +116,13 @@ public class Intake {
     //method for the motor intaking
     public void setIntakeSpeed(double speedForBar, double speedForRollers){     
         intakeBar.set(-speedForBar);
-        outerRollers.set(speedForRollers); // test motor
+        outerRollers.set(-speedForRollers); // test motor
     }
 
     //output or outtaking
     public void setOuttakeSpeed(double speedForBar, double speedForRollers){ 
         intakeBar.set(speedForBar);
-        outerRollers.set(-speedForRollers); // test motor
+        outerRollers.set(speedForRollers); // test motor
     }
 
     //stops motor
