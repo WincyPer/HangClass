@@ -154,7 +154,7 @@ public class Hang {
                 pivot.resetEnc();
                 elevator.setElevatorStop();
                 elevator.encoderReset();
-                intake.setStopMode();
+                intake.setArmStopMode();
                 setUpMidCount++;
             }
     
@@ -176,7 +176,7 @@ public class Hang {
                 elevator.setElevatorExtendLim();
                 pivot.setPivOutward();
                 if(intake.extInsidePerimeter()){
-                    intake.setStopMode();
+                    intake.setArmStopMode();
                 }
 
                 else{
@@ -357,7 +357,7 @@ public class Hang {
         SmartDashboard.putNumber("TIMER", timer.get()); 
 
         weightAdjuster.run();
-        intake.run();
+        intake.intakeRun();
         pivot.run(); 
         elevator.run();
 

@@ -245,7 +245,7 @@ public class Robot extends TimedRobot {
         }
 
         if(joystick.getRawButton(4)){
-          intake.setTestingMode();
+          intake.setArmTestingMode();
           intake.manualIntakeExt(joystick.getY());
         }
 
@@ -258,7 +258,7 @@ public class Robot extends TimedRobot {
         }
 
         else{
-          intake.setStopMode();
+          intake.setArmStopMode();
         }
 
         if(joystick.getRawButton(7)){
@@ -301,7 +301,7 @@ public class Robot extends TimedRobot {
           //weightAdj.weightReset();
         }
         
-        intake.run();
+        intake.intakeRun();
         pivot.run();
         elevator.run();
         weightAdj.run();
