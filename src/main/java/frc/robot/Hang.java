@@ -149,6 +149,7 @@ public class Hang {
         switch(setUpMidCount) {
 
             case 0:                     
+            //RESET ENCODERS FOR HANG ELEVATOR, PIVOT, AND INTAKE
             if(pivot.frontLimitTouched() && elevator.bottomLimitTouched() && intake.armIsDown()){
                 pivot.setStop();
                 pivot.resetEnc();
@@ -161,7 +162,7 @@ public class Hang {
             else{      
                 pivot.setPivInwardLim();
                 elevator.setElevatorRetractLim();
-                intake.setExtend();                  //keep intake down
+                intake.setExtend();                  
             }                                      
             break;
 
@@ -169,6 +170,7 @@ public class Hang {
             if(elevator.topLimitTouched() && pivot.afterOutwardEnc() && intake.extInsidePerimeter()){
                 pivot.setStop();
                 elevator.setElevatorStop();
+                intake.setArmStopMode();
                 timer.start();
                 setUpMidCount++;
             }
@@ -186,8 +188,8 @@ public class Hang {
             break;
 
             case 2:                      //DELAY FOR DRIVERS TO DRIVE TO RUNG
-            if (timer.get() >= 3) {     //after five seconds, move on to the next case
-                timer.stop(); 
+            if (timer.get() >= 3) {     
+                timer.stop();   //after five seconds, move on to the next case
                 setUpMidCount++; 
             }
             break;  
@@ -205,6 +207,8 @@ public class Hang {
             case 4:                         //INWARD PIVOT UNTIL PIVOT LINES UP WITH RUNG
             if(pivot.beforeMidRange()){
                 pivot.setStop();
+                timer.reset();
+                timer.start();
                 setUpMidCount++;
             } 
             else{
@@ -212,7 +216,14 @@ public class Hang {
             }
             break;
 
-            case 5:                         //EXTEND ELEVATOR UNTIL PIVOT IS ON THE RUNG
+            case 5:
+            if (timer.get() >= 0.5) {     
+                timer.stop();   //after five seconds, move on to the next case
+                setUpMidCount++; 
+            }
+            break; 
+
+            case 6:                         //EXTEND ELEVATOR UNTIL PIVOT IS ON THE RUNG
             if(elevator.abovePivot()){            
                 elevator.setElevatorStop();
                 setUpMidCount++;
@@ -222,7 +233,7 @@ public class Hang {
             }
             break;  
 
-            case 6:                         //RESETS TIMER FOR DELAY
+            case 7:                         //RESETS TIMER FOR DELAY
             timer.reset();  
             break; 
         }   
