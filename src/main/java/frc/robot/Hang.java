@@ -39,6 +39,8 @@ public class Hang {
     private int setUpHighGrabCount = 0;
     private Timer timer;
 
+    //ELEVATOR SPEEDS
+
     /////////////////////////////////////////////
     //                                         //
     //              CONSTRUCTOR                //
@@ -107,29 +109,6 @@ public class Hang {
     }    
 
     private void testing(){}
-/*
-    public void elevatorWeightUp() {
-        if (elevator.topLimitTouched()){        //if the top limit is touched, stop elevator
-            elevator.setElevatorStop();                                          
-            weightAdjuster.setWeightUp();
-        } 
-
-        else {
-            elevator.setElevatorExtendLim();       //extend elevator otherwise
-        }
-    }
-
-    public void elevatorWeightDown(){
-        if (weightAdjuster.beforeDownLim()) {       //if the weight is up, set it down until its in the right "down" position
-        weightAdjuster.setWeightDown();
-        } 
-        
-        else {
-        weightAdjuster.setWeightStop();     //once the weight is down, retract elevator
-        elevator.setElevatorRetractLim();
-        }
-    }
-*/
 
     private void resetPosition(){   //RESETS ENCODER WHEN PIVOT AND ELEVATOR TOUCHES THEIR RESPECTIVE LIMITS
         if(pivot.frontLimitTouched() && elevator.bottomLimitTouched()){
@@ -141,7 +120,7 @@ public class Hang {
 
         else{
             pivot.setPivInwardLim();
-            elevator.setElevatorRetractLim();
+            elevator.setRetractLimFast();
         }
     }
     
@@ -161,7 +140,7 @@ public class Hang {
     
             else{      
                 pivot.setPivInwardLim();
-                elevator.setElevatorRetractLim();
+                elevator.setRetractLimFast();
                 intake.setExtend();                  
             }                                      
             break;
@@ -175,7 +154,7 @@ public class Hang {
                 setUpMidCount++;
             }
             else{
-                elevator.setElevatorExtendLim();
+                elevator.setExtendLimFast();
                 pivot.setPivOutward();
                 if(intake.extInsidePerimeter()){
                     intake.setArmStopMode();
@@ -200,7 +179,7 @@ public class Hang {
                 setUpMidCount++;
             } 
             else {
-                elevator.setRetract();                                  
+                elevator.setRetractLimFast();                                  
             }
             break; 
 
@@ -229,7 +208,7 @@ public class Hang {
                 setUpMidCount++;
             }
             else{
-                elevator.setExtend();               
+                elevator.setExtendLimSlow();               
             }
             break;  
 
@@ -263,7 +242,7 @@ public class Hang {
                 setUpHighCount++; 
             } 
             else {
-                elevator.setElevatorExtendLim();
+                elevator.setExtendLimFast();
                 double pivotOutput = pivotPID.calculate(pivotEncoder.get(), 600);
                 pivot.manualPivot(pivotOutput);
             }
@@ -288,7 +267,7 @@ public class Hang {
             }
 
             else{
-                elevator.setElevatorRetractLim();
+                elevator.setRetractLimFast();
             }
             break;
 
@@ -311,7 +290,7 @@ public class Hang {
                 setUpHighGrabCount++;
             }
             else{
-                elevator.setExtend();;
+                elevator.setExtendLimSlow();
             }
             break;
 
@@ -340,7 +319,7 @@ public class Hang {
             }
 
             else{
-                elevator.setElevatorRetractLim();
+                elevator.setRetractLimFast();
             }
             break;
                                                             

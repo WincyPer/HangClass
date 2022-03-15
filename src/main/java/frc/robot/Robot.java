@@ -190,12 +190,12 @@ public class Robot extends TimedRobot {
 
       else if(joystick.getRawButton(7)){
         hangClass.setTesting();
-        elevator.setElevatorExtendLim();
+        elevator.setExtendLimSlow();
       }
 
       else if(joystick.getRawButton(8)){
         hangClass.setTesting();
-        elevator.setElevatorRetractLim();
+        elevator.setRetractLimSlow();
       }
 
       else if(joystick.getRawButton(9)){
@@ -262,11 +262,11 @@ public class Robot extends TimedRobot {
         }
 
         if(joystick.getRawButton(7)){
-          elevator.setElevatorExtendLim();
+          elevator.setExtendLimSlow();
         }
 
         else if(joystick.getRawButton(8)){
-          elevator.setElevatorRetractLim();
+          elevator.setRetractLimSlow();
         }
 
         else if (joystick.getRawButton(12)){
