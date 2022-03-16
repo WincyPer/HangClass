@@ -176,6 +176,7 @@ public class Robot extends TimedRobot {
       if (joystick.getRawButton(3)) {
         hangClass.setMidHang();
       } 
+      
       else if (joystick.getRawButton(4)) {
         hangClass.setHighHang();
       } 

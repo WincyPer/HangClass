@@ -167,7 +167,7 @@ public class Hang {
             break;
 
             case 2:                      //DELAY FOR DRIVERS TO DRIVE TO RUNG
-            if (timer.get() >= 3) {     
+            if (timer.get() >= 1.5) {     
                 timer.stop();   //after five seconds, move on to the next case
                 setUpMidCount++; 
             }
@@ -263,10 +263,19 @@ public class Hang {
             //RETRACT FULLY SO PIVOT CAN LET GO
             if(elevator.bottomLimitTouched()){
                 elevator.setElevatorStop();
+                pivot.setStop();        
                 setUpHighGrabCount++;
             }
-
             else{
+                if(elevator.startPivotingInward()){
+                    if(pivot.frontLimitTouched()){
+                        pivot.setStop();
+                    }
+                    else{
+                        pivot.setTesting();
+                        pivot.manualPivot(-0.1);
+                    }
+                }
                 elevator.setRetractLimFast();
             }
             break;
