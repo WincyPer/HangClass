@@ -132,6 +132,7 @@ public class Hang {
             if(pivot.frontLimitTouched() && elevator.bottomLimitTouched() && intake.armIsDown()){
                 pivot.setStop();
                 pivot.resetEnc();
+                weightAdjuster.resetEncoder();
                 elevator.setElevatorStop();
                 elevator.encoderReset();
                 intake.setArmStopMode();
@@ -150,11 +151,13 @@ public class Hang {
                 pivot.setStop();
                 elevator.setElevatorStop();
                 intake.setArmStopMode();
+                weightAdjuster.setWeightStop();
                 timer.start();
                 setUpMidCount++;
             }
             else{
                 elevator.setExtendLimFast();
+                weightAdjuster.setWeightDown();
                 if(pivot.afterOutwardEnc()){
                     pivot.setStop();
                 }
@@ -343,6 +346,7 @@ public class Hang {
     private void stop(){        //STOPS ELEVATOR AND PIVOT
         elevator.setElevatorStop();
         pivot.setStop();
+        weightAdjuster.setWeightStop(); //JUST ADDED
     }
 
     /////////////////////////////////////////////

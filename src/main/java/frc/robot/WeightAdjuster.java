@@ -19,7 +19,8 @@ public class WeightAdjuster {
     private double weightSpeedDown = -0.35;            //speed going down
 
     private double weightMaxUp = 48;            //encoder count for the most up it can be
-    private double weightMaxDown = -85;          //encoder count for the farthest down it can be
+    private double weightMaxDown = -59;          //encoder count for the farthest down it can be
+
 
     public WeightAdjuster(MotorController WeightShifter, SingleChannelEncoder shifterEnc){
         weightAdjuster = WeightShifter;
@@ -58,7 +59,7 @@ public class WeightAdjuster {
     }
 
     private boolean beforeDownLim() {
-        return weightEncoder.get() >= (weightMaxDown + 10); 
+        return weightEncoder.get() >= (weightMaxDown); 
     }
 
     private boolean beforeHomeLim() {
@@ -134,7 +135,7 @@ public class WeightAdjuster {
 
     public void run(){
 
-        SmartDashboard.putNumber("TALON ENCODER", weightEncoder.get());
+        SmartDashboard.putNumber("WEIGHT ENCODER", weightEncoder.get());
         SmartDashboard.putNumber("SPEED", weightAdjuster.get()); 
         SmartDashboard.putBoolean("BEFORE UP LIM", beforeUpLim());
         SmartDashboard.putBoolean("BEFORE DOWN LIM", beforeDownLim());
