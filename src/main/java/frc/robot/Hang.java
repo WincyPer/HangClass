@@ -147,7 +147,7 @@ public class Hang {
             break;
 
             case 1:                     //EXTEND ELEV AND PIVOT FOR SETUP POS.
-            if(elevator.topLimitTouched() && pivot.afterOutwardEnc() && intake.extInsidePerimeter()){
+            if(elevator.topLimitTouched() && pivot.afterOutwardEnc() && intake.extInsidePerimeter() && !weightAdjuster.beforeDownLim()){
                 pivot.setStop();
                 elevator.setElevatorStop();
                 intake.setArmStopMode();
@@ -164,7 +164,6 @@ public class Hang {
                 else{
                     pivot.setPivOutward();
                 }
-
                 if(intake.extInsidePerimeter()){
                     intake.setArmStopMode();
                 }

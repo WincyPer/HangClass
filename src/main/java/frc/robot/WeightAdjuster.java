@@ -58,7 +58,7 @@ public class WeightAdjuster {
         return weightEncoder.get() <= (weightMaxUp - 10); 
     }
 
-    private boolean beforeDownLim() {
+    public boolean beforeDownLim() {
         return weightEncoder.get() >= (weightMaxDown); 
     }
 
