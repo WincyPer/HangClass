@@ -125,7 +125,7 @@ public class WeightAdjuster {
     }
 
     public void resetEncoder(){
-        
+        weightEncoder.reset();
     }
 
     public void testing (){

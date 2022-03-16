@@ -285,8 +285,9 @@ public class Robot extends TimedRobot {
         }
 
         else if(joystick.getRawButton(11)){
-          weightAdj.
+          weightAdj.resetEncoder();
         }
+
         else{
           weightAdj.setWeightStop();
         }
