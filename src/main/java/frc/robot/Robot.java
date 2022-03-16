@@ -284,6 +284,9 @@ public class Robot extends TimedRobot {
           weightAdj.manualWeight(joystick.getY());
         }
 
+        else if(joystick.getRawButton(11)){
+          weightAdj.
+        }
         else{
           weightAdj.setWeightStop();
         }

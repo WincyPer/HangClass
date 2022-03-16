@@ -124,6 +124,10 @@ public class WeightAdjuster {
         weightAdjuster.set(speed);
     }
 
+    public void resetEncoder(){
+        
+    }
+
     public void testing (){
         //EMPTY CODE FOR TESTING
     }

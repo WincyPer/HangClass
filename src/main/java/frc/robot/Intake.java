@@ -22,7 +22,7 @@ public class Intake {
     private double extEncUp = -190;               // encoder for the extension going up (TEST) //-197 //-193 //-197'
     private double extEncMidWay = -90;
     private double extEncDown = 190;            // encoder for the extension going down(TEST) //192 //199 //186
-    private double insideRobotPerimeter = -140; // Encoder count for bringing the arm extension to the point where it is inside the robot perimeter
+    private double insideRobotPerimeter = -130; // Encoder count for bringing the arm extension to the point where it is inside the robot perimeter
 
     //SPEEDS:
     private double intakeSpeed = 1;           // the speed of the intake motor
@@ -30,7 +30,7 @@ public class Intake {
     private double outtakeSpeed = 1;          // the speed of the motor outtaking
     
     private double intakeExtSpeed = 1;        // speed for intake extension (TEST)
-    private double intakeRetractSpeed = 0.5;  // speed for intake extensin when it retracts 
+    private double intakeRetractSpeed = 0.55;  // speed for intake extensin when it retracts 
     private double outerRollerSpeed = 1;      // the speed of the outerRoller motor (TEST)
 
     //COUNTERS:

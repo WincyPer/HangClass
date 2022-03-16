@@ -155,11 +155,16 @@ public class Hang {
             }
             else{
                 elevator.setExtendLimFast();
-                pivot.setPivOutward();
+                if(pivot.afterOutwardEnc()){
+                    pivot.setStop();
+                }
+                else{
+                    pivot.setPivOutward();
+                }
+
                 if(intake.extInsidePerimeter()){
                     intake.setArmStopMode();
                 }
-
                 else{
                     intake.setRetract();
                 }
@@ -263,11 +268,11 @@ public class Hang {
             //RETRACT FULLY SO PIVOT CAN LET GO
             if(elevator.bottomLimitTouched()){
                 elevator.setElevatorStop();
-                pivot.setStop();        
+                //pivot.setStop();        
                 setUpHighGrabCount++;
             }
             else{
-                if(elevator.startPivotingInward()){
+                /*if(elevator.startPivotingInward()){
                     if(pivot.frontLimitTouched()){
                         pivot.setStop();
                     }
@@ -275,7 +280,7 @@ public class Hang {
                         pivot.setTesting();
                         pivot.manualPivot(-0.1);
                     }
-                }
+                }*/
                 elevator.setRetractLimFast();
             }
             break;
