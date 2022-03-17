@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
     intakeArmLim = new DigitalInput(6);
     intakeExtEnc = new SingleChannelEncoder(intakeExt, intakeExtChannel);
     outerRollers = new WPI_VictorSPX(0);
-    intake = new Intake(intakeMotor, intakeExt, outerRollers, intakeExtEnc, intakeSensor, intakeArmLim, intakeTimer);
+    intake = new Intake(intakeMotor, intakeExt, outerRollers, intakeExtEnc, intakeSensor, intakeArmLim);
     
     hangPivotMotor = new WPI_TalonSRX(4);
     hangElevatorMotor = new WPI_TalonFX(2);
@@ -159,8 +159,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
    
     SmartDashboard.putNumber("AXIS NUMBER", joystick.getRawAxis(3)); 
-    SmartDashboard.putNumber("DRIVER TIME", DriverStation.getMatchTime());
-
+    
     if (joystick.getRawAxis(3) == -1) {
       SmartDashboard.putString("MODE:", "REAAALLL!!!");
       //drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
@@ -185,10 +184,6 @@ public class Robot extends TimedRobot {
         hangClass.setHighHangGrab();
       }
 
-      else if(joystick.getRawButton(6)){
-        hangClass.setResetPos();
-      }
-
       else if(joystick.getRawButton(7)){
         hangClass.setTesting();
         elevator.setExtendLimSlow();
@@ -203,15 +198,28 @@ public class Robot extends TimedRobot {
         hangClass.setTesting();
         pivot.setTesting();
         pivot.manualPivot(joystick.getY());
+          
+        if(joystick.getRawButton(11)){
+          elevator.setExtendLimFast();
+         }
+  
+        else if(joystick.getRawButton(12)){
+          elevator.setRetractLimFast();
+         }
+
+        else{
+          elevator.setElevatorStop();
+        }
       }
 
       else if(joystick.getRawButton(11)){
-        hangClass.resetCounters();
+        hangClass.setTesting();
+        elevator.setExtendLimFast();
       }
 
-      else if (joystick.getRawButton(12)) {
-        pivot.resetEnc();
-        elevator.encoderReset();
+      else if(joystick.getRawButton(12)){
+        hangClass.setTesting();
+        elevator.setRetractLimFast();
       }
 
       else {
@@ -304,6 +312,10 @@ public class Robot extends TimedRobot {
           pivot.resetEnc();
           elevator.encoderReset();
           //weightAdj.weightReset();
+        }
+
+        else if(joystick.getPOV() == 180){
+          hangClass.resetCounters();
         }
         
         intake.intakeRun();

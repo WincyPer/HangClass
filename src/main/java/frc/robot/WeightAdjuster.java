@@ -19,8 +19,8 @@ public class WeightAdjuster {
     private double weightSpeedDown = -0.35;            //speed going down
 
     private double weightMaxUp = 48;            //encoder count for the most up it can be
-    private double weightMaxDown = -59;          //encoder count for the farthest down it can be
-
+    private double weightMaxDown = -49;          //encoder count for the farthest down it can be
+    //USED TO BE -59
 
     public WeightAdjuster(MotorController WeightShifter, SingleChannelEncoder shifterEnc){
         weightAdjuster = WeightShifter;
