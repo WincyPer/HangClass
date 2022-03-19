@@ -335,6 +335,8 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     hangClass.setNothing();
     hangClass.resetCounters();
+    weightAdj.resetEncoder();
+    weightAdj.resetTimer();
   }
 
   /** This function is called once when test mode is enabled. */

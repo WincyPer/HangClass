@@ -132,10 +132,11 @@ public class Hang {
             if(pivot.frontLimitTouched() && elevator.bottomLimitTouched() && intake.armIsDown()){
                 pivot.setStop();
                 pivot.resetEnc();
-                weightAdjuster.resetEncoder();
+                intake.setArmStopMode();
                 elevator.setElevatorStop();
                 elevator.encoderReset();
-                intake.setArmStopMode();
+                weightAdjuster.resetEncoder();
+                weightAdjuster.resetTimer();
                 setUpMidCount++;
             }
     
