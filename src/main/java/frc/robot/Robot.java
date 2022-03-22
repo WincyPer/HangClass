@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
   private WPI_TalonSRX intakeMotor;
   private DigitalInput intakeSensor;
   private Timer intakeTimer;
-  private WPI_VictorSPX intakeExt;
+  private WPI_TalonSRX intakeExt;
   private DigitalInput intakeExtChannel;
   private DigitalInput intakeArmLim;
   private SingleChannelEncoder intakeExtEnc;
@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
     intakeSensor = new DigitalInput(4);
     intakeTimer = new Timer();
 
-    intakeExt = new WPI_VictorSPX(1);
+    intakeExt = new WPI_TalonSRX(5);
     intakeExtChannel = new DigitalInput(5);
     intakeArmLim = new DigitalInput(6);
     intakeExtEnc = new SingleChannelEncoder(intakeExt, intakeExtChannel);

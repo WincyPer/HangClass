@@ -231,14 +231,14 @@ public class Hang {
 
             case 0:                                 
             //PIVOT INWARD UNTIL IT IS ANGLED BELOW THE BAR
-            if(pivotEncoder.get() < 800){
+            if(pivotEncoder.get() < 1400){
                 pivotPID.reset();
                 pivotPID.setPID(0.0005, 0.00011, 0.00004);      //SETS PID VALUES
                 pivot.setTesting();
                 setUpHighCount++;
             }
             else{
-                pivot.setPivInward();
+                pivot.setPivInwardLim();        //USED TO BE PIVINWARD
             }
             break;
 
@@ -251,7 +251,7 @@ public class Hang {
             } 
             else {
                 elevator.setExtendLimFast();
-                double pivotOutput = pivotPID.calculate(pivotEncoder.get(), 600);
+                double pivotOutput = pivotPID.calculate(pivotEncoder.get(), 900);
                 pivot.manualPivot(pivotOutput);
             }
             break; 
