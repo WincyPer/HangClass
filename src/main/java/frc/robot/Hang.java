@@ -163,8 +163,9 @@ public class Hang {
                     pivot.setStop();
                 }
                 else{
-                    pivot.setPivOutward();
+                    pivot.setPivOutwardLim();
                 }
+
                 if(intake.extInsidePerimeter()){
                     intake.setArmStopMode();
                 }
@@ -296,7 +297,7 @@ public class Hang {
             }
 
             else{
-                pivot.setPivOutward();
+                pivot.setPivOutwardLim();
             }
             break;
 
@@ -319,7 +320,7 @@ public class Hang {
             }
 
             else{
-                pivot.setPivOutward();
+                pivot.setPivOutwardLim();
             }
             break;
 
@@ -346,7 +347,7 @@ public class Hang {
     private void stop(){        //STOPS ELEVATOR AND PIVOT
         elevator.setElevatorStop();
         pivot.setStop();
-        weightAdjuster.setWeightStop(); //JUST ADDED
+        weightAdjuster.setWeightStop(); 
     }
 
     /////////////////////////////////////////////

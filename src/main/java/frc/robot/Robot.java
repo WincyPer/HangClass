@@ -164,7 +164,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putString("MODE:", "REAAALLL!!!");
       //drive.arcadeDrive(-joystick1.getX(), -joystick1.getY());
       
-      if(joystick.getRawButton(10)){
+      if(joystick.getRawButton(11)){
         drive.arcadeDrive(-joystick.getX(), -joystick.getY());
       }
 
@@ -184,12 +184,12 @@ public class Robot extends TimedRobot {
         hangClass.setHighHangGrab();
       }
 
-      else if(joystick.getRawButton(7)){
+      else if(joystick.getRawButton(10)){
         hangClass.setTesting();
         elevator.setExtendLimSlow();
       }
 
-      else if(joystick.getRawButton(8)){
+      else if(joystick.getRawButton(12)){
         hangClass.setTesting();
         elevator.setRetractLimSlow();
       }
@@ -199,11 +199,11 @@ public class Robot extends TimedRobot {
         pivot.setTesting();
         pivot.manualPivot(joystick.getY());
           
-        if(joystick.getRawButton(11)){
+        if(joystick.getRawButton(7)){
           elevator.setExtendLimFast();
          }
   
-        else if(joystick.getRawButton(12)){
+        else if(joystick.getRawButton(8)){
           elevator.setRetractLimFast();
          }
 
@@ -212,12 +212,12 @@ public class Robot extends TimedRobot {
         }
       }
 
-      else if(joystick.getRawButton(11)){
+      else if(joystick.getRawButton(7)){
         hangClass.setTesting();
         elevator.setExtendLimFast();
       }
 
-      else if(joystick.getRawButton(12)){
+      else if(joystick.getRawButton(8)){
         hangClass.setTesting();
         elevator.setRetractLimFast();
       }
